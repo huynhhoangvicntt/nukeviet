@@ -1,0 +1,45 @@
+[Sun, 24 Mar 2024 20:17:00 +0700] [nukeviet.my] [127.0.0.1] [Error(1): Uncaught PDOException: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'title' in 'field list' in D:\xampp\htdocs\nukeviet.my\vendor\vinades\nukeviet\Core\Database.php:580
+Stack trace:
+#0 D:\xampp\htdocs\nukeviet.my\vendor\vinades\nukeviet\Core\Database.php(580): PDO->prepare('INSERT INTO nv4...', Array)
+#1 D:\xampp\htdocs\nukeviet.my\modules\missworld\admin\add.php(29): NukeViet\Core\Database->prepare('INSERT INTO nv4...')
+#2 D:\xampp\htdocs\nukeviet.my\admin\index.php(182): require('D:\\xampp\\htdocs...')
+#3 {main}
+  thrown] [FILE: /vendor/vinades/nukeviet/Core/Database.php] [LINE: 580]
+[Sun, 24 Mar 2024 20:35:55 +0700] [nukeviet.my] [127.0.0.1] [Error(1): Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'nukeviet4.nv4_vi_missworld_config' doesn't exist in D:\xampp\htdocs\nukeviet.my\vendor\vinades\nukeviet\Core\Database.php:544
+Stack trace:
+#0 D:\xampp\htdocs\nukeviet.my\vendor\vinades\nukeviet\Core\Database.php(544): PDO->query('SELECT config_n...', NULL)
+#1 D:\xampp\htdocs\nukeviet.my\vendor\vinades\nukeviet\Cache\Files.php(200): NukeViet\Core\Database->query('SELECT config_n...')
+#2 D:\xampp\htdocs\nukeviet.my\modules\missworld\functions.php(20): NukeViet\Cache\Files->db('SELECT config_n...', '', 'missworld')
+#3 D:\xampp\htdocs\nukeviet.my\index.php(349): require('D:\\xampp\\htdocs...')
+#4 {main}
+  thrown] [FILE: /vendor/vinades/nukeviet/Core/Database.php] [LINE: 544]
+[Sun, 24 Mar 2024 21:35:57 +0700] [nukeviet.my] [127.0.0.1] [Run-time notices(8192): Implicit conversion from float 505372.00000000006 to int loses precision] [FILE: /includes/core/captcha.php] [LINE: 16] [TRACE:]
+#1  LINE: 26    FILE: /index.php
+#2  LINE: 253   FILE: /includes/mainfile.php
+#3  LINE: 16    FILE: /includes/core/captcha.php
+
+[Sun, 24 Mar 2024 22:34:31 +0700] [nukeviet.my] [127.0.0.1] [Warning(2): Undefined variable $base_url] [FILE: /modules/missworld/admin/main.php] [LINE: 37] [TRACE:]
+#1  LINE: 182   FILE: /admin/index.php
+
+[Sun, 24 Mar 2024 22:36:04 +0700] [nukeviet.my] [127.0.0.1] [Run-time notices(8192): preg_match(): Passing null to parameter #2 ($subject) of type string is deprecated] [FILE: /includes/functions.php] [LINE: 1622] [TRACE:]
+#1  LINE: 182   FILE: /admin/index.php
+#2  LINE: 37    FILE: /modules/missworld/admin/main.php
+#3  LINE: 1622  FILE: /includes/functions.php
+
+[Sun, 24 Mar 2024 22:43:52 +0700] [nukeviet.my] [127.0.0.1] [Error(1): Uncaught Error: Value of type null is not callable in D:\xampp\htdocs\nukeviet.my\modules\missworld\admin\main.php:37
+Stack trace:
+#0 D:\xampp\htdocs\nukeviet.my\admin\index.php(182): require()
+#1 {main}
+  thrown] [FILE: /modules/missworld/admin/main.php] [LINE: 37]
+[Sun, 24 Mar 2024 22:47:32 +0700] [nukeviet.my] [127.0.0.1] [Error(1): Uncaught ArgumentCountError: Too few arguments to function nv_generate_page(), 2 passed in D:\xampp\htdocs\nukeviet.my\modules\missworld\admin\main.php on line 37 and at least 4 expected in D:\xampp\htdocs\nukeviet.my\includes\functions.php:1600
+Stack trace:
+#0 D:\xampp\htdocs\nukeviet.my\modules\missworld\admin\main.php(37): nv_generate_page(5, 2)
+#1 D:\xampp\htdocs\nukeviet.my\admin\index.php(182): require('D:\\xampp\\htdocs...')
+#2 {main}
+  thrown] [FILE: /includes/functions.php] [LINE: 1600]
+[Sun, 24 Mar 2024 22:49:47 +0700] [nukeviet.my] [127.0.0.1] [Warning(2): Undefined variable $on_page] [FILE: /modules/missworld/admin/main.php] [LINE: 39] [TRACE:]
+#1  LINE: 182   FILE: /admin/index.php
+
+[Sun, 24 Mar 2024 23:02:45 +0700] [nukeviet.my] [127.0.0.1] [Warning(2): Undefined variable $on_page] [FILE: /modules/missworld/admin/main.php] [LINE: 38] [TRACE:]
+#1  LINE: 182   FILE: /admin/index.php
+

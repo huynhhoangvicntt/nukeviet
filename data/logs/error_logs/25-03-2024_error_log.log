@@ -1,0 +1,14 @@
+[Mon, 25 Mar 2024 14:19:32 +0700] [nukeviet.my] [127.0.0.1] [Warning(2): exif_read_data(hh.png): File not supported] [FILE: /vendor/vinades/nukeviet/Files/Upload.php] [LINE: 1076] [TRACE:]
+#1  LINE: 182   FILE: /admin/index.php
+#2  LINE: 33    FILE: /modules/missworld/admin/add.php
+#3  LINE: 1076  FILE: /vendor/vinades/nukeviet/Files/Upload.php
+
+[Mon, 25 Mar 2024 19:21:05 +0700] [nukeviet.my] [127.0.0.1] [Warning(2): Undefined variable $lang_module] [FILE: /modules/missworld/admin.menu.php] [LINE: 20] [TRACE:]
+#1  LINE: 182   FILE: /admin/index.php
+#2  LINE: 146   FILE: /admin/siteinfo/main.php
+#3  LINE: 299   FILE: /themes/admin_default/theme.php
+#4  LINE: 103   FILE: /themes/admin_default/theme.php
+
+[Mon, 25 Mar 2024 19:21:11 +0700] [nukeviet.my] [127.0.0.1] [Warning(2): Undefined array key "list"] [FILE: /modules/missworld/admin/main.php] [LINE: 16] [TRACE:]
+#1  LINE: 182   FILE: /admin/index.php
+

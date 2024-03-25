@@ -1,0 +1,15 @@
+[Sat, 23 Mar 2024 20:15:00 +0700] [nukeviet.my] [127.0.0.1] [Warning(2): Undefined variable $lang] [FILE: /modules/missworld/admin/main.php] [LINE: 20] [TRACE:]
+#1  LINE: 182   FILE: /admin/index.php
+
+[Sat, 23 Mar 2024 20:15:00 +0700] [nukeviet.my] [127.0.0.1] [Error(1): Uncaught PDOException: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'nukeviet4.nv4__missworld_missworld' doesn't exist in D:\xampp\htdocs\nukeviet.my\vendor\vinades\nukeviet\Core\Database.php:544
+Stack trace:
+#0 D:\xampp\htdocs\nukeviet.my\vendor\vinades\nukeviet\Core\Database.php(544): PDO->query('SELECT * FROM n...', NULL)
+#1 D:\xampp\htdocs\nukeviet.my\modules\missworld\admin\main.php(20): NukeViet\Core\Database->query('SELECT * FROM n...')
+#2 D:\xampp\htdocs\nukeviet.my\admin\index.php(182): require('D:\\xampp\\htdocs...')
+#3 {main}
+  thrown] [FILE: /vendor/vinades/nukeviet/Core/Database.php] [LINE: 544]
+[Sat, 23 Mar 2024 20:15:36 +0700] [nukeviet.my] [127.0.0.1] [Error(1): Uncaught Error: Undefined constant "db" in D:\xampp\htdocs\nukeviet.my\modules\missworld\admin\main.php:20
+Stack trace:
+#0 D:\xampp\htdocs\nukeviet.my\admin\index.php(182): require()
+#1 {main}
+  thrown] [FILE: /modules/missworld/admin/main.php] [LINE: 20]
