@@ -746,6 +746,21 @@ figure.media {
     min-width: 10px;
 }
 
+/* NV-Media */
+figure.nv-media {
+    clear: both;
+    margin: 5px 0 10px 0;
+    display: block;
+    min-width: 10px;
+}
+
+figure.nv-media video,
+figure.nv-media audio {
+    max-width: 100%;
+    margin: 0 auto;
+    display: block;
+}
+
 /* Image */
 img.image_resized {
     height: auto;
