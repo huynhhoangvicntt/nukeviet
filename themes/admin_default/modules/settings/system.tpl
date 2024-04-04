@@ -161,6 +161,15 @@
                     <td><input type="checkbox" name="remote_api_log" value="1"{CHECKED_REMOTE_API_LOG}/></td>
                 </tr>
                 <tr>
+                    <td><strong>{LANG.api_check_time}</strong></td>
+                    <td class="form-inline">
+                        <div class="input-group">
+                            <input type="number" name="api_check_time" value="{DATA.api_check_time}" min="1" max="1440" class="form-control">
+                            <span class="input-group-addon">{GLANG.sec}</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
                     <td><strong>{LANG.cookie_notice_popup}</strong></td>
                     <td><input type="checkbox" name="cookie_notice_popup" value="1"{CHECKED_COOKIE_NOTICE_POPUP}/></td>
                 </tr>
@@ -210,7 +219,7 @@ function reopeningTimeShow(t) {
 }
 $(document).ready(function() {
     $("#site_timezone").select2();
-    
+
     $("#reopening_date").datepicker({
         showOn : "both",
         dateFormat : "dd/mm/yy",

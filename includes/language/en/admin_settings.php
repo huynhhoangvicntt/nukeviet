@@ -266,6 +266,7 @@ $lang_module['cdn_url'] = 'Hosting CDN for javascript, css';
 $lang_module['remote_api_access'] = 'Enable Remote API';
 $lang_module['remote_api_access_help'] = 'Disabling all API access from outside will be blocked. Internal APIs are still used normally';
 $lang_module['remote_api_log'] = 'Enable Remote API Logging';
+$lang_module['api_check_time'] = 'Maximum deviation time between Client and API Server';
 $lang_module['plugin'] = 'Configuration Plugin';
 $lang_module['plugin_info'] = 'php file plugin implementation is contained in the &ldquo;<strong>includes/plugin/</strong>&rdquo;. The plugin will always run when the system is activated';
 $lang_module['plugin_file'] = 'Executable File';

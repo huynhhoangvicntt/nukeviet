@@ -185,6 +185,13 @@ if ($checkss == $nv_Request->get_string('checkss', 'post')) {
 
         $array_config_global['remote_api_access'] = (int) $nv_Request->get_bool('remote_api_access', 'post', false);
         $array_config_global['remote_api_log'] = (int) $nv_Request->get_bool('remote_api_log', 'post', false);
+        $array_config_global['api_check_time'] = $nv_Request->get_absint('api_check_time', 'post', 0);
+
+        // Cho phép sai lệch từ 1 giây - 1 ngày
+        if ($array_config_global['api_check_time'] <= 0 or $array_config_global['api_check_time'] > 1440) {
+            $array_config_global['api_check_time'] = 5;
+        }
+
         $array_config_global['cookie_notice_popup'] = (int) $nv_Request->get_bool('cookie_notice_popup', 'post', false);
 
         $closed_site = $nv_Request->get_int('closed_site', 'post');
@@ -253,6 +260,7 @@ if (!empty($global_config['site_reopening_time'])) {
 
 $xtpl = new XTemplate('system.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
 $xtpl->assign('LANG', $lang_module);
+$xtpl->assign('GLANG', $lang_global);
 $xtpl->assign('DATA', $global_config);
 $xtpl->assign('NV_BASE_ADMINURL', NV_BASE_ADMINURL);
 $xtpl->assign('NV_NAME_VARIABLE', NV_NAME_VARIABLE);

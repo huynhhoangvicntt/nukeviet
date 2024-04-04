@@ -266,6 +266,7 @@ $lang_module['cdn_url'] = 'Hosting CDN pour javascript, css';
 $lang_module['remote_api_access'] = 'Activer l\'API à distance';
 $lang_module['remote_api_access_help'] = 'La désactivation de tous les accès API de l\'extérieur sera bloquée. Les API internes sont toujours utilisées normalement';
 $lang_module['remote_api_log'] = 'Activer la journalisation d\'API à distance';
+$lang_module['api_check_time'] = 'Temps d\'écart maximum entre le client et le serveur API';
 $lang_module['plugin'] = 'Configuration du Plugin';
 $lang_module['plugin_info'] = 'Plugin doit être un fichier php se situé dans le dossier &ldquo;<strong>includes/plugin/</strong>&rdquo;. Ces Plugin exécutent toujours avec le système en cas d\'activation';
 $lang_module['plugin_file'] = 'Fichier Plugin';
