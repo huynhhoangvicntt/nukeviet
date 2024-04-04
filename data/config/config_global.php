@@ -33,6 +33,7 @@ $global_config['admin_2step_opt'] = 'code';
 $global_config['admin_check_pass_time'] = 1800;
 $global_config['allow_null_origin'] = 0;
 $global_config['allow_sitelangs'] = ['vi'];
+$global_config['api_check_time'] = 5;
 $global_config['authors_detail_main'] = 0;
 $global_config['autocheckupdate'] = 1;
 $global_config['autoupdatetime'] = 24;
