@@ -96,36 +96,37 @@ $error = [];
 $sql = 'SELECT id, full_name FROM ' . NV_PREFIXLANG . '_' . $module_data . '_department';
 $array_department = $nv_Cache->db($sql, 'id', $module_name);
 
-if (!empty($array_department)) {
-    $departmentid = $nv_Request->get_int('departmentid', 'get', 0);
+if (empty($array_department)) {
+    nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=row');
+}
 
-    if (empty($departmentid)) {
-        $departmentid = array_keys($array_department)[0];
-    }
+$departmentid = $nv_Request->get_int('departmentid', 'get', 0);
+if (empty($departmentid) or !isset($array_department[$departmentid])) {
+    $departmentid = array_keys($array_department)[0];
+}
 
-    $per_page = 20;
-    $page = $nv_Request->get_int('page', 'post,get', 1);
-    $db->sqlreset()
-        ->select('COUNT(*)')
-        ->from(NV_PREFIXLANG . '_' . $module_data . '_supporter')
-        ->where('departmentid=' . $departmentid);
+$per_page = 20;
+$page = $nv_Request->get_int('page', 'post,get', 1);
+$db->sqlreset()
+->select('COUNT(*)')
+->from(NV_PREFIXLANG . '_' . $module_data . '_supporter')
+->where('departmentid=' . $departmentid);
 
-    $sth = $db->prepare($db->sql());
+$sth = $db->prepare($db->sql());
 
-    $sth->execute();
-    $num_items = $sth->fetchColumn();
+$sth->execute();
+$num_items = $sth->fetchColumn();
 
-    $db->select('*')
-        ->order('weight ASC')
-        ->limit($per_page)
-        ->offset(($page - 1) * $per_page);
-    $sth = $db->prepare($db->sql());
+$db->select('*')
+->order('weight ASC')
+->limit($per_page)
+->offset(($page - 1) * $per_page);
+$sth = $db->prepare($db->sql());
 
-    $sth->execute();
+$sth->execute();
 
-    while ($view = $sth->fetch()) {
-        $array_data[] = $view;
-    }
+while ($view = $sth->fetch()) {
+    $array_data[] = $view;
 }
 
 $xtpl = new XTemplate($op . '.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
