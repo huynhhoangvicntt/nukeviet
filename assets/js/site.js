@@ -9,24 +9,23 @@
 
 function formXSSsanitize(form) {
     $(form).find("input, textarea").not(":submit, :reset, :image, :file, :disabled").not('[data-sanitize-ignore]').each(function() {
-        $(this).val(DOMPurify.sanitize($(this).val(), {}))
-    })
-}
-
-function btnClickSubmit(event, form) {
-    event.preventDefault();
-    if (XSSsanitize) {
-        formXSSsanitize(form)
-    }
-
-    $(form).submit()
+        let value;
+        if (this.dataset.editorname && window.nveditor && window.nveditor[this.dataset.editorname]) {
+            value = window.nveditor[this.dataset.editorname].getData();
+        } else {
+            value = $(this).val();
+        }
+        $(this).val(DOMPurify.sanitize(value, {}));
+    });
 }
 
 $(function() {
     $('body').on('click', '[type=submit]:not([name])', function(e) {
         var form = $(this).parents('form');
-        if (!$('[name=submit]', form).length) {
-            btnClickSubmit(e,form)
+        if (XSSsanitize && !$('[name=submit]', form).length) {
+            e.preventDefault();
+            formXSSsanitize(form);
+            $(form).submit();
         }
     });
 })
