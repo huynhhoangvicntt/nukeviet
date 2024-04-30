@@ -9,13 +9,7 @@
 
 function formXSSsanitize(form) {
     $(form).find("input, textarea").not(":submit, :reset, :image, :file, :disabled").not('[data-sanitize-ignore]').each(function() {
-        let value;
-        if (this.dataset.editorname && window.nveditor && window.nveditor[this.dataset.editorname]) {
-            value = window.nveditor[this.dataset.editorname].getData();
-        } else {
-            value = $(this).val();
-        }
-        $(this).val(DOMPurify.sanitize(value, {}));
+        $(this).val(DOMPurify.sanitize($(this).val(), {}));
     });
 }
 
@@ -23,7 +17,16 @@ $(function() {
     $('body').on('click', '[type=submit]:not([name])', function(e) {
         var form = $(this).parents('form');
         if (XSSsanitize && !$('[name=submit]', form).length) {
+            // Khi không xử lý XSS thì trình submit mặc định sẽ thực hiện
             e.preventDefault();
+
+            // Đưa CKEditor 5 trình soạn thảo vào textarea trước khi submit
+            $(form).find("textarea").each(function() {
+                if (this.dataset.editorname && window.nveditor && window.nveditor[this.dataset.editorname]) {
+                    $(this).val(window.nveditor[this.dataset.editorname].getData());
+                }
+            });
+
             formXSSsanitize(form);
             $(form).submit();
         }
