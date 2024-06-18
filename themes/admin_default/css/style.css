@@ -596,6 +596,10 @@ table caption {
     padding: 0px 0 5px;
 }
 
+.tableFloatingHeaderOriginal:not(.bg-primary, .bg-info, .bg-danger, .bg-success) {
+    background-color: #fff;
+}
+
 sup.required {
     color: #f00;
 }
@@ -771,6 +775,7 @@ input[type='radio'] {
     width: 16px;
     min-width: 16px;
     -webkit-appearance: none;
+    appearance: none;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     color: #555;
@@ -1067,6 +1072,7 @@ button.close {
     background: 0 0;
     border: 0;
     -webkit-appearance: none;
+    appearance: none;
 }
 
 .close {
