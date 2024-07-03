@@ -22,6 +22,7 @@ CKEDITOR.editorConfig = function( config ) {
         sandbox: 'allow-scripts allow-same-origin allow-forms allow-presentation allow-popups',
         allow: 'autoplay'
     };
+    config.versionCheck = false;
     // Default setting.
 
     config.toolbarGroups = [
