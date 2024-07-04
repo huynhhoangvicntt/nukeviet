@@ -1151,7 +1151,7 @@ $page_url .= '/' . $array_data['type'];
 $canonicalUrl = getCanonicalUrl($page_url, true);
 
 if (!defined('NV_EDITOR')) {
-    define('NV_EDITOR', 'ckeditor');
+    define('NV_EDITOR', 'ckeditor5-classic');
 }
 require_once NV_ROOTDIR . '/' . NV_EDITORSDIR . '/' . NV_EDITOR . '/nv.php';
 

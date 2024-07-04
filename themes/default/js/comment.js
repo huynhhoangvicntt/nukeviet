@@ -18,9 +18,8 @@ function nv_comment_reset(event, form) {
     $("[name=pid]", form).val(0);
     $(form)[0].reset();
     if ($(form).data('editor')) {
-        CKEDITOR.instances['commentcontent'].setData('', function() {
-            this.updateElement()
-        })
+        window.nveditor['commentcontent'].setData('');
+        $('#commentcontent').val('');
     }
 }
 
@@ -30,7 +29,10 @@ function nv_commment_feedback(event, cid, post_name) {
         $("#formcomment form [name=pid]").val(cid);
         var data = $('#formcomment form').data();
         if (data.editor) {
-            CKEDITOR.instances['commentcontent'].insertText("@" + post_name + " ");
+            window.nveditor['commentcontent'].model.change(() => {
+                window.nveditor['commentcontent'].model.insertContent(window.nveditor['commentcontent'].data.toModel(window.nveditor['commentcontent'].data.processor.toView("@" + post_name + "&nbsp;")), window.nveditor['commentcontent'].model.document.selection);
+            });
+            window.nveditor['commentcontent'].editing.view.focus();
         } else {
             $("#formcomment form [name=content]").focus();
             $("#formcomment form [name=content]").val("@" + post_name + " ");
@@ -107,7 +109,7 @@ function nv_comment_submit(form) {
         return !1
     }
     if ($(form).data('editor')) {
-        CKEDITOR.instances['commentcontent'].updateElement()
+        $('#commentcontent').val(window.nveditor['commentcontent'].getData());
     }
     var content = strip_tags(trim($("[name=content]", form).val()));
     $("[name=content]", form).val(content);
@@ -143,15 +145,15 @@ $(document).ready(function() {
         // Gửi comment khi ấn Ctrl + Enter
         var data = commentform.data();
         if (data.editor) {
-            CKEDITOR.instances['commentcontent'].on('key', function(event) {
-                if (event.data.keyCode === 1114125) {
-                    commentform.submit()
+            window.nveditor["commentcontent"].editing.view.document.on('keydown', (event, data) => {
+                if (data.ctrlKey && data.keyCode == 13) {
+                    commentform.submit();
                 }
             });
         } else {
             $('#commentcontent').on("keydown", function(e) {
                 if (e.ctrlKey && e.keyCode == 13) {
-                    commentform.submit()
+                    commentform.submit();
                 }
             });
         }

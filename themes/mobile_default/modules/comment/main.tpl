@@ -44,8 +44,78 @@
             <div class="form-group clearfix">
                 <textarea class="form-control" style="width: 100%" name="content" id="commentcontent" cols="20" rows="5"></textarea>
                 <!-- BEGIN: editor -->
-                <script type="text/javascript" src="{NV_BASE_SITEURL}{NV_EDITORSDIR}/ckeditor/ckeditor.js?t={TIMESTAMP}"></script>
-                <script type="text/javascript">CKEDITOR.replace('content', { width: '100%', height: '200px', removePlugins: 'uploadfile,uploadimage,autosave' });</script>
+                <script type="text/javascript" src="{NV_BASE_SITEURL}{NV_EDITORSDIR}/ckeditor5-classic/ckeditor.js?t={TIMESTAMP}"></script>
+                <script type="text/javascript" src="{NV_BASE_SITEURL}{NV_EDITORSDIR}/ckeditor5-classic/language/{NV_LANG_INTERFACE}.js?t={TIMESTAMP}"></script>
+                <script type="text/javascript">
+                (async () => {
+                    await ClassicEditor
+                    .create(document.getElementById("commentcontent"), {
+                        language: '{NV_LANG_INTERFACE}',
+                        removePlugins: ["NVBox"],
+                        image: {insert: {integrations: ["url"]}},
+                        nvmedia: {insert: {integrations: ["url"]}},
+                        toolbar: {
+                            items: [
+                                'undo',
+                                'redo',
+                                'selectAll',
+                                '|',
+                                'link',
+                                'imageInsert',
+                                'nvmediaInsert',
+                                'insertTable',
+                                'code',
+                                'codeBlock',
+                                'horizontalLine',
+                                'specialCharacters',
+                                'pageBreak',
+                                '|',
+                                'findAndReplace',
+                                'showBlocks',
+                                '|',
+                                'bulletedList',
+                                'numberedList',
+                                'outdent',
+                                'indent',
+                                'blockQuote',
+                                'heading',
+                                'fontSize',
+                                'fontFamily',
+                                'fontColor',
+                                'fontBackgroundColor',
+                                'highlight',
+                                'alignment',
+                                '|',
+                                'bold',
+                                'italic',
+                                'underline',
+                                'strikethrough',
+                                'subscript',
+                                'superscript',
+                                '|',
+                                'sourceEditing',
+                                'restrictedEditingException',
+                                'removeFormat'
+                            ],
+                            shouldNotGroupWhenFull: false
+                        }
+                    })
+                    .then(editor => {
+                        window.nveditor = window.nveditor || [];
+                        window.nveditor["commentcontent"] = editor;
+                        if (editor.sourceElement && editor.sourceElement instanceof HTMLTextAreaElement && editor.sourceElement.form) {
+                            editor.sourceElement.dataset.editorname = "commentcontent";
+                            editor.sourceElement.form.addEventListener("submit", event => {
+                                // Xử lý khi submit form thông thường
+                                editor.sourceElement.value = editor.getData();
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+                })();
+                </script>
                 <!-- END: editor -->
             </div>
             <!-- BEGIN: attach -->

@@ -19,10 +19,10 @@ $page_url = NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DA
 $contents = '';
 
 // Lay danh sach nhom
-$sql = 'SELECT g.*, d.* FROM ' . NV_MOD_TABLE . '_groups AS g 
-    LEFT JOIN ' . NV_MOD_TABLE . "_groups_detail d ON ( g.group_id = d.group_id AND d.lang='" . NV_LANG_DATA . "' ) 
-    LEFT JOIN " . NV_MOD_TABLE . '_groups_users u ON ( g.group_id = u.group_id ) 
-    WHERE (g.idsite = ' . $global_config['idsite'] . ' OR (g.idsite =0 AND g.group_id > 3 AND g.siteus = 1)) AND (u.userid = ' . $user_info['userid'] . ' AND u.is_leader = 1) 
+$sql = 'SELECT g.*, d.* FROM ' . NV_MOD_TABLE . '_groups AS g
+    LEFT JOIN ' . NV_MOD_TABLE . "_groups_detail d ON ( g.group_id = d.group_id AND d.lang='" . NV_LANG_DATA . "' )
+    LEFT JOIN " . NV_MOD_TABLE . '_groups_users u ON ( g.group_id = u.group_id )
+    WHERE (g.idsite = ' . $global_config['idsite'] . ' OR (g.idsite =0 AND g.group_id > 3 AND g.siteus = 1)) AND (u.userid = ' . $user_info['userid'] . ' AND u.is_leader = 1)
     ORDER BY g.idsite, g.weight';
 $result = $db->query($sql);
 $groupsList = [];
@@ -510,24 +510,10 @@ if (sizeof($array_op) == 3 and $array_op[0] == 'groups' and $array_op[1] and $ar
         nv_redirect_location(NV_BASE_SITEURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=' . $op);
     }
 
-    if (defined('NV_EDITOR')) {
-        require_once NV_ROOTDIR . '/' . NV_EDITORSDIR . '/' . NV_EDITOR . '/nv.php';
-    } elseif (!nv_function_exists('nv_aleditor') and file_exists(NV_ROOTDIR . '/' . NV_EDITORSDIR . '/ckeditor/ckeditor.js')) {
-        define('NV_EDITOR', true);
-        define('NV_IS_CKEDITOR', true);
-        $my_head .= '<script type="text/javascript" src="' . NV_STATIC_URL . NV_EDITORSDIR . '/ckeditor/ckeditor.js"></script>';
-
-        function nv_aleditor($textareaname, $width = '100%', $height = '450px', $val = '', $customtoolbar = '')
-        {
-            global $module_data;
-            $return = '<textarea style="width: ' . $width . '; height:' . $height . ';" id="' . $module_data . '_' . $textareaname . '" name="' . $textareaname . '">' . $val . '</textarea>';
-            $return .= "<script type=\"text/javascript\">
-            CKEDITOR.replace( '" . $module_data . '_' . $textareaname . "', {" . (!empty($customtoolbar) ? 'toolbar : "' . $customtoolbar . '",' : '') . " width: '" . $width . "',height: '" . $height . "',removePlugins: 'uploadfile,uploadimage'});
-            </script>";
-
-            return $return;
-        }
+    if (!defined('NV_EDITOR')) {
+        define('NV_EDITOR', 'ckeditor5-classic');
     }
+    require_once NV_ROOTDIR . '/' . NV_EDITORSDIR . '/' . NV_EDITOR . '/nv.php';
 
     if ($nv_Request->isset_request('save', 'post')) {
         $rowcontent = [];
@@ -543,8 +529,8 @@ if (sizeof($array_op) == 3 and $array_op[0] == 'groups' and $array_op[1] and $ar
         $group_content = $nv_Request->get_string('group_content', 'post', '');
         $rowcontent['group_content'] = defined('NV_EDITOR') ? nv_nl2br($group_content, '') : nv_nl2br(nv_htmlspecialchars(strip_tags($group_content)), '<br />');
 
-        $stmt = $db->prepare('UPDATE ' . NV_MOD_TABLE . '_groups_detail 
-            SET title = :title, description = :description, content = :content 
+        $stmt = $db->prepare('UPDATE ' . NV_MOD_TABLE . '_groups_detail
+            SET title = :title, description = :description, content = :content
             WHERE group_id = ' . $group_id . " AND lang='" . NV_LANG_DATA . "'");
         $stmt->bindParam(':title', $rowcontent['group_title'], PDO::PARAM_STR);
         $stmt->bindParam(':description', $rowcontent['group_desc'], PDO::PARAM_STR);

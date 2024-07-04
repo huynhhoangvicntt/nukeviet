@@ -410,11 +410,11 @@ function user_login($is_ajax = false)
 
 /**
  * user_openid_login()
- * 
- * @param mixed $gfx_chk 
- * @param mixed $attribs 
- * @param array $op_process 
- * @return string 
+ *
+ * @param mixed $gfx_chk
+ * @param mixed $attribs
+ * @param array $op_process
+ * @return string
  */
 function user_openid_login($attribs, $op_process)
 {
@@ -969,9 +969,6 @@ function user_info($data, $array_field_config, $custom_fields, $types, $data_que
                 }
                 $xtpl->parse('main.tab_edit_others.loop');
             }
-        }
-        if (defined('CKEDITOR')) {
-            $xtpl->parse('main.tab_edit_others.ckeditor');
         }
         $xtpl->parse('main.edit_others');
         $xtpl->parse('main.tab_edit_others');

@@ -189,7 +189,7 @@ if ($nv_Request->get_int('save', 'post', 0)) {
     $position = '';
     $admin_theme = '';
     $userid = $nv_Request->get_title('userid', 'get');
-    $editor = 'ckeditor';
+    $editor = 'ckeditor5-classic';
     $lev = 3;
     $modules = [];
     $allow_files_type = explode(',', 'adobe,application,archives,audio,documents,flash,images,real,video');
