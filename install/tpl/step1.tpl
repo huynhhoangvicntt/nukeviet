@@ -92,7 +92,7 @@
             <a target="_blank" href="https://github.com/tuanta">tuanta</a>,
             <a target="_blank" href="https://github.com/duyetdev">duyetdev</a>,
             ledinhhung87 at gmail.com,
-            mtmost.com at gmail.com,
+            mtmost[dot]com at gmail.com,
             <a target="_blank" href="https://github.com/truongdacngoc1993">truongdacngoc1993</a>,
             <a target="_blank" href="https://github.com/ThinhNguyenVB">ThinhNguyenVB</a>,
             Hoàng Tuyên at VINADES.,JSC,
@@ -103,6 +103,11 @@
         <div class="list-member-other-version">
             <h4>{LANG.thanks_list_member_other_version}:</h4>
             <div class="version">
+                <h5>{LANG.thanks_other_version} 4.5.06</h5>
+                    <a target="_blank" href="https://github.com/vinades">VINADES.,JSC (17 commits)</a>,
+                    <a target="_blank" href="https://github.com/hoaquynhtim99">hoaquynhtim99 (6 commits)</a>,
+                    <a target="_blank" href="https://github.com/webvang">webvang</a> (1 commits),
+                    dat.huynh (1 commits)
                 <h5>{LANG.thanks_other_version} 4.5.05</h5>
                     <a target="_blank" href="https://github.com/vinades">VINADES.,JSC (45 commits)</a>,
                     <a target="_blank" href="https://github.com/hoaquynhtim99">hoaquynhtim99 (1 commits)</a>,
@@ -280,7 +285,7 @@
                     <a target="_blank" href="https://github.com/hoaquynhtim99">hoaquynhtim99 (9 commits)</a>,
                     tamahari at gmail.com (5 commits)</a>,
                     ledinhhung87 at gmail.com (1 commits)</a>,
-                    mtmost.com at gmail.com (1 commits)</a>
+                    mtmost[dot]com at gmail.com (1 commits)</a>
                 <br><br>
                 <h5>{LANG.thanks_other_version} 3.0</h5>
                     <a target="_blank" href="https://github.com/vuthao">vuthao (283 commits)</a>,
