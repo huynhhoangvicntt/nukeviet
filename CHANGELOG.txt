@@ -1,5 +1,19 @@
 CHANGE LOG: NUKEVIET CMS
 http://nukeviet.vn
+NUKEVIET 4.5.06
+- The default editor is Ckeditor 5 Classic
+- Change the name of DB backup files
+- Add plugin NVMedia for Ckeditor 5 Classic
+- Add config: api_check_time
+- Fix template email
+- Change usage from serialize to json
+- Updated how to check extension package uploads
+- Fix Division by zero in modules/contact/admin/supporter.php
+- Fix auto delete notification
+- Add allow-popups for iframe sandbox attribute
+- Auto sticky table thead in theme admin_default
+- Update version: Jquery UI v1.13.3, jQuery Validation Plugin - v1.21.0, DOMPurify 3.1.6
+
 NUKEVIET 4.5.05
 - Fix CKEditor 4 iframe, delete plugin googledocs and replace with docviewer
 - Fix upload error when filename contains character %
