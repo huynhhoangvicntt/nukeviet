@@ -275,22 +275,6 @@ $sql_create_module[] = 'CREATE TABLE IF NOT EXISTS ' . $db_config['prefix'] . '_
     PRIMARY KEY (userid)
 ) ENGINE=MyISAM';
 
-$sql_create_module[] = "CREATE TABLE IF NOT EXISTS " . $db_config['prefix'] . "_" . $module_data . "_matrix (
-  `fid` mediumint(8) NOT NULL,
-  `rows` smallint(4) NOT NULL DEFAULT '0',
-  `cols` smallint(4) NOT NULL DEFAULT '0',
-  `row_title` text,
-  `col_title` text,
-  PRIMARY KEY (`fid`)
-) ENGINE=MyISAM";
-
-$sql_create_module[] = "CREATE TABLE IF NOT EXISTS " . $db_config['prefix'] . "_" . $module_data . "_matrix_data (
-  `userid` mediumint(8) unsigned NOT NULL,
-  `fid` mediumint(8) NOT NULL,
-  `data` text,
-  PRIMARY KEY (`userid`, `fid`)
-) ENGINE=MyISAM";
-
 $sql_create_module[] = 'CREATE TABLE IF NOT EXISTS ' . $db_config['prefix'] . '_' . $module_data . "_edit (
     userid mediumint(8) unsigned NOT NULL,
     lastedit int(11) unsigned NOT NULL DEFAULT '0',

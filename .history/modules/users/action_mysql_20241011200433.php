@@ -250,7 +250,7 @@ $sql_create_module[] = 'CREATE TABLE IF NOT EXISTS ' . $db_config['prefix'] . '_
     fid mediumint(8) NOT NULL AUTO_INCREMENT,
     field varchar(25) NOT NULL,
     weight int(10) unsigned NOT NULL DEFAULT '1',
-    field_type enum('number','date','textbox','textarea','editor','select','radio','checkbox','multiselect,'matrix') NOT NULL DEFAULT 'textbox',
+    field_type enum('number','date','textbox','textarea','editor','select','radio','checkbox','multiselect') NOT NULL DEFAULT 'textbox',
     field_choices text NOT NULL,
     sql_choices text NOT NULL,
     match_type enum('none','alphanumeric','unicodename','email','url','regex','callback') NOT NULL DEFAULT 'none',
@@ -274,22 +274,6 @@ $sql_create_module[] = 'CREATE TABLE IF NOT EXISTS ' . $db_config['prefix'] . '_
     userid mediumint(8) unsigned NOT NULL,
     PRIMARY KEY (userid)
 ) ENGINE=MyISAM';
-
-$sql_create_module[] = "CREATE TABLE IF NOT EXISTS " . $db_config['prefix'] . "_" . $module_data . "_matrix (
-  `fid` mediumint(8) NOT NULL,
-  `rows` smallint(4) NOT NULL DEFAULT '0',
-  `cols` smallint(4) NOT NULL DEFAULT '0',
-  `row_title` text,
-  `col_title` text,
-  PRIMARY KEY (`fid`)
-) ENGINE=MyISAM";
-
-$sql_create_module[] = "CREATE TABLE IF NOT EXISTS " . $db_config['prefix'] . "_" . $module_data . "_matrix_data (
-  `userid` mediumint(8) unsigned NOT NULL,
-  `fid` mediumint(8) NOT NULL,
-  `data` text,
-  PRIMARY KEY (`userid`, `fid`)
-) ENGINE=MyISAM";
 
 $sql_create_module[] = 'CREATE TABLE IF NOT EXISTS ' . $db_config['prefix'] . '_' . $module_data . "_edit (
     userid mediumint(8) unsigned NOT NULL,
