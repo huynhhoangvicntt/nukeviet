@@ -263,6 +263,78 @@
                 <!-- END: loop_field_choice -->
             </tbody>
         </table>
+        <table class="table table-striped table-bordered table-hover" id="matrixfields" {DATAFORM.display_matrixfields}>
+            <caption><em class="fa fa-file-text-o">&nbsp;</em>{LANG.field_options_matrix}</caption>
+            <colgroup>
+                <col class="w250" />
+                <col />
+            </colgroup>
+            <tbody>
+                <tr>
+                    <td>{LANG.field_matrix_size}</td>
+                    <td>
+                        <div class="row">
+                            <div class="col-sm-12 col-md-6">
+                                <div class="form-group">
+                                    <label>{LANG.field_matrix_rows}:</label>
+                                    <input type="number" class="form-control required" name="rows_matrix" 
+                                        value="{MATRIX.rows_matrix}" min="1" max="20">
+                                </div>
+                            </div>
+                            <div class="col-sm-12 col-md-6">
+                                <div class="form-group">
+                                    <label>{LANG.field_matrix_cols}:</label>
+                                    <input type="number" class="form-control required" name="cols_matrix"
+                                        value="{MATRIX.cols_matrix}" min="1" max="20">
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>{LANG.field_matrix_row_title}</td>
+                    <td>
+                        <div id="matrix-rows" class="matrix-labels">
+                            <!-- BEGIN: row_title -->
+                            <div class="form-group matrix-row" data-index="{ROW_INDEX}">
+                                <div class="input-group">
+                                    <span class="input-group-addon">{LANG.field_matrix_row} {ROW_NUMBER}</span>
+                                    <input type="text" class="form-control" name="row_title_{ROW_INDEX}"
+                                        value="{ROW_TITLE}" maxlength="250">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default matrix-remove-btn" data-type="row">
+                                            <em class="fa fa-times"></em>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- END: row_title -->
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>{LANG.field_matrix_col_title}</td>
+                    <td>
+                        <div id="matrix-cols" class="matrix-labels">
+                            <!-- BEGIN: col_title -->
+                            <div class="form-group matrix-col" data-index="{COL_INDEX}">
+                                <div class="input-group">
+                                    <span class="input-group-addon">{LANG.field_matrix_col} {COL_NUMBER}</span>
+                                    <input type="text" class="form-control" name="col_title_{COL_INDEX}"
+                                        value="{COL_TITLE}" maxlength="250">
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default matrix-remove-btn" data-type="col">
+                                            <em class="fa fa-times"></em>
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                            <!-- END: col_title -->
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
     <div style="margin-left: 350px;">
         <input type="hidden" value="{DATAFORM.system}" name="system">

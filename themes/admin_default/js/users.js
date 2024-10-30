@@ -404,6 +404,191 @@ function nv_data_export(set_export) {
 
 // User field
 var items = ''; // fields.tpl
+
+const matrixHandler = {
+    // Khởi tạo ma trận
+    init() {
+        this.setupEvents();
+        this.updateView();
+    },
+
+    // Thiết lập tất cả events
+    setupEvents() {
+        // Sự kiện xóa hàng/cột
+        $(document).on('click', '.matrix-remove-btn', (e) => {
+            const $btn = $(e.target).closest('.matrix-remove-btn');
+            const type = $btn.data('type');
+            const inputName = type === 'row' ? 'rows_matrix' : 'cols_matrix';
+            
+            let count = parseInt($(`input[name="${inputName}"]`).val());
+            if(count > 1) {
+                count--;
+                $(`input[name="${inputName}"]`).val(count).trigger('change');
+            }
+        });
+
+        // Sự kiện thay đổi số lượng hàng/cột
+        $('input[name="rows_matrix"], input[name="cols_matrix"]').on('change', () => {
+            this.updateView();
+        });
+
+        // Sự kiện thay đổi tiêu đề hàng/cột
+        $(document).on('change', 'input[name^="row_title_"], input[name^="col_title_"]', () => {
+            this.updateView();
+        });
+    },
+
+    // Cập nhật giao diện
+    updateView() {
+        const rows = this.getValidNumber('rows_matrix');
+        const cols = this.getValidNumber('cols_matrix');
+
+        this.renderTitles('row', rows);
+        this.renderTitles('col', cols);
+        this.renderGrid(rows, cols);
+    },
+
+    // Lấy số hợp lệ từ input
+    getValidNumber(inputName) {
+        const value = parseInt($(`input[name="${inputName}"]`).val()) || 1;
+        return Math.max(1, Math.min(20, value));
+    },
+
+    // Render tiêu đề hàng/cột
+    renderTitles(type, count) {
+        const titles = this.getCurrentTitles(type);
+        let html = '';
+
+        for(let i = 0; i < count; i++) {
+            const label = type === 'row' ? 'Hàng' : 'Cột';
+            const title = titles[i] || '';
+            const showRemove = count > 1;
+
+            html += `
+                <div class="form-group matrix-${type}">
+                    <div class="input-group">
+                        <span class="input-group-addon">${label} ${i + 1}</span>
+                        <input type="text" class="form-control" 
+                               name="${type}_title_${i}" 
+                               value="${title}" maxlength="250">
+                        ${showRemove ? `
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default matrix-remove-btn" 
+                                        data-type="${type}">
+                                    <em class="fa fa-times"></em>
+                                </button>
+                            </span>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        $(`#matrix-${type}s`).html(html);
+    },
+
+    // Lấy tiêu đề hiện tại
+    getCurrentTitles(type) {
+        const titles = {};
+        $(`input[name^="${type}_title_"]`).each(function() {
+            const index = this.name.replace(`${type}_title_`, '');
+            titles[index] = $(this).val();
+        });
+        return titles;
+    },
+
+    // Render lưới ma trận
+    renderGrid(rows, cols) {
+        let html = `
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        ${this.renderGridHeader(cols)}
+                    </tr>
+                </thead>
+                <tbody>
+                    ${this.renderGridBody(rows, cols)}
+                </tbody>
+            </table>
+        `;
+        $('#matrix-data').html(html);
+    },
+
+    // Render header của lưới
+    renderGridHeader(cols) {
+        let html = '';
+        for(let i = 0; i < cols; i++) {
+            const title = $(`input[name="col_title_${i}"]`).val() || `Cột ${i + 1}`;
+            html += `<th>${title}</th>`;
+        }
+        return html;
+    },
+
+    // Render body của lưới
+    renderGridBody(rows, cols) {
+        let html = '';
+        for(let i = 0; i < rows; i++) {
+            const rowTitle = $(`input[name="row_title_${i}"]`).val() || `Hàng ${i + 1}`;
+            html += '<tr>';
+            html += `<td>${rowTitle}</td>`;
+            
+            for(let j = 0; j < cols; j++) {
+                const value = this.getCellValue(i, j);
+                html += `
+                    <td>
+                        <input type="text" class="form-control" 
+                               name="matrix_${i}_${j}" 
+                               value="${value}">
+                    </td>
+                `;
+            }
+            html += '</tr>';
+        }
+        return html;
+    },
+
+    // Lấy giá trị ô trong lưới
+    getCellValue(row, col) {
+        return $(`input[name="matrix_${row}_${col}"]`).val() || '';
+    },
+
+    // Lấy dữ liệu ma trận để lưu
+    getData() {
+        const rows = this.getValidNumber('rows_matrix');
+        const cols = this.getValidNumber('cols_matrix');
+        const data = [];
+
+        for(let i = 0; i < rows; i++) {
+            const row = [];
+            for(let j = 0; j < cols; j++) {
+                row.push(this.getCellValue(i, j));
+            }
+            data.push(row);
+        }
+
+        return JSON.stringify(data);
+    },
+
+    // Load dữ liệu vào ma trận
+    loadData(jsonData) {
+        try {
+            const data = JSON.parse(jsonData);
+            $('input[name="rows_matrix"]').val(data.length);
+            $('input[name="cols_matrix"]').val(data[0].length);
+            this.updateView();
+
+            data.forEach((row, i) => {
+                row.forEach((value, j) => {
+                    $(`input[name="matrix_${i}_${j}"]`).val(value);
+                });
+            });
+        } catch(e) {
+            console.error('Invalid matrix data:', e);
+        }
+    }
+};
+
 function nv_choice_fields_additem(placeholder) {
     items++;
     var newitem = '<tr class="text-center">';
@@ -693,6 +878,7 @@ $(document).ready(function() {
         $("#choiceitems").hide();
         $("#choicesql").hide();
         $("#editorfields").hide();
+        $("#matrixfields").hide();
         if (field_type == 'textbox' || field_type == 'textarea' || field_type == 'editor') {
             if (field_type == 'textbox') {
                 $("#li_alphanumeric").show();
@@ -711,6 +897,15 @@ $(document).ready(function() {
             $("#numberfields").show();
         } else if (field_type == 'date') {
             $("#datefields").show();
+        } else if (field_type == 'matrix') { // Thêm case matrix
+            $("#matrixfields").show();
+            if(!$('input[name="rows_matrix"]').val()) {
+                $('input[name="rows_matrix"]').val(1);
+            }
+            if(!$('input[name="cols_matrix"]').val()) {
+                $('input[name="cols_matrix"]').val(1);
+            }
+            matrixHandler.init();
         } else {
             $("#choicetypes").show();
             $("#textfields").hide();
@@ -748,6 +943,33 @@ $(document).ready(function() {
     });
     $("select[name=choicetypes]").change(function() {
         nv_users_check_choicetypes(this);
+    });
+
+    // Matrix handler
+    $("input[name=rows_matrix], input[name=cols_matrix]").on("change", function() {
+        const value = parseInt($(this).val());
+        if(!isNaN(value)) {
+            matrixHandler.updateView();
+        }
+    });
+
+    $(document).on("change", "input[name^='row_title_'], input[name^='col_title_']", function() {
+        matrixHandler.updateView();
+    });
+
+    // Khởi tạo ma trận nếu đang sửa
+    if($('input[name="field_type"]:checked').val() == 'matrix') {
+        matrixHandler.init();
+        if($('input[name="default_value"]').val()) {
+            matrixHandler.loadData($('input[name="default_value"]').val());
+        }
+    }
+
+    // Xử lý submit form cho matrix
+    $("#ffields").on("submit", function() {
+        if($('input[name="field_type"]:checked').val() == 'matrix') {
+            $('input[name="default_value"]').val(matrixHandler.getData());
+        }
     });
 
     // Group

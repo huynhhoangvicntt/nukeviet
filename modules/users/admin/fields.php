@@ -155,7 +155,7 @@ if ($nv_Request->isset_request('choicesql', 'post')) {
 }
 
 //Add, Edit
-$text_fields = $number_fields = $date_fields = $choice_fields = $choice_type_sql = $choice_type_text = 0;
+$text_fields = $number_fields = $date_fields = $choice_fields = $choice_type_sql = $choice_type_text = $matrix_fields = 0;
 $error = '';
 $field_choices = [];
 if ($nv_Request->isset_request('save', 'post')) {
@@ -312,6 +312,46 @@ if ($nv_Request->isset_request('save', 'post')) {
         } else {
             $dataform['field_choices'] = serialize(['current_date' => $dataform['current_date']]);
         }
+    } elseif ($dataform['field_type'] == 'matrix') {
+        $matrix_fields = 1;  
+        
+        // Xử lý ma trận
+    $rows_matrix = $nv_Request->get_int('rows_matrix', 'post', 0); 
+    $cols_matrix = $nv_Request->get_int('cols_matrix', 'post', 0);
+    
+    if ($rows_matrix < 1 || $rows_matrix > 20 || $cols_matrix < 1 || $cols_matrix > 20) {
+        $error = $lang_module['error_matrix_size'];
+    }
+    
+    // Lấy tiêu đề hàng và cột
+    $row_titles = array();
+    $col_titles = array();
+    
+    for ($i = 0; $i < $rows_matrix; $i++) {
+        $row_titles[] = $nv_Request->get_title('row_title_' . $i, 'post', '');
+    }
+    
+    for ($i = 0; $i < $cols_matrix; $i++) { 
+        $col_titles[] = $nv_Request->get_title('col_title_' . $i, 'post', '');
+    }
+
+    // Tạo ma trận mặc định
+    $default_matrix = array();
+    for ($i = 0; $i < $rows_matrix; $i++) {
+        $row = array();
+        for ($j = 0; $j < $cols_matrix; $j++) {
+            $row[] = ''; // Giá trị mặc định cho mỗi ô là rỗng
+        }
+        $default_matrix[] = $row;
+    }
+    
+    // Thiết lập các thông số cho trường
+    $dataform['match_type'] = 'none';
+    $dataform['match_regex'] = $dataform['func_callback'] = '';
+    $dataform['min_length'] = 0;
+    $dataform['max_length'] = 65536; // TEXT 
+    $dataform['field_choices'] = '';
+    $dataform['default_value'] = serialize($default_matrix); // Lưu ma trận mặc định đã serialize
     } else {
         $dataform['choicetypes'] = $nv_Request->get_string('choicetypes', 'post', '');
         $dataform['match_type'] = 'none';
@@ -391,6 +431,9 @@ if ($nv_Request->isset_request('save', 'post')) {
                     $type_date = '';
                     if ($dataform['field_type'] == 'number' or $dataform['field_type'] == 'date') {
                         $type_date = "DOUBLE NOT NULL DEFAULT '" . $dataform['default_value'] . "'";
+                    } elseif ($dataform['field_type'] == 'matrix') {
+                        $type_date = 'TEXT NOT NULL';
+                        $dataform['default_value'] = '';
                     } elseif ($dataform['max_length'] <= 255) {
                         $type_date = 'VARCHAR( ' . $dataform['max_length'] . " ) NOT NULL DEFAULT ''";
                     } elseif ($dataform['max_length'] <= 65536) {
@@ -404,6 +447,26 @@ if ($nv_Request->isset_request('save', 'post')) {
                         $type_date = 'LONGTEXT NOT NULL';
                     }
                     $save = $db->exec('ALTER TABLE ' . NV_MOD_TABLE . '_info ADD ' . $dataform['field'] . ' ' . $type_date . ' COMMENT ' . $db->quote($dataform['title']));
+                     // Lưu cấu hình matrix nếu là trường ma trận
+if ($save && $dataform['field_type'] == 'matrix') {
+    // Khởi tạo giá trị mặc định cho trường matrix trong users_info
+    $db->query('UPDATE ' . NV_MOD_TABLE . '_info SET ' . $dataform['field'] . " = ''");
+    
+    // Lưu cấu hình ma trận
+    $stmt = $db->prepare("INSERT INTO " . NV_MOD_TABLE . "_matrix
+        (fid, rows_matrix, cols_matrix, row_title, col_title)
+        VALUES (:fid, :rows_matrix, :cols_matrix, :row_title, :col_title)");
+
+    $stmt->bindParam(':fid', $dataform['fid'], PDO::PARAM_INT);
+    $stmt->bindParam(':rows_matrix', $rows_matrix, PDO::PARAM_INT); 
+    $stmt->bindParam(':cols_matrix', $cols_matrix, PDO::PARAM_INT);
+    $stmt->bindParam(':row_title', serialize($row_titles), PDO::PARAM_STR);
+    $stmt->bindParam(':col_title', serialize($col_titles), PDO::PARAM_STR);
+    
+    if ($stmt->execute()) {
+        nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=' . $op . '&fid=' . $dataform['fid'] . '&rand=' . nv_genpass());
+    }
+}
                 }
             }
         } elseif ($dataform['max_length'] <= 4294967296) {
@@ -440,6 +503,9 @@ if ($nv_Request->isset_request('save', 'post')) {
                     $type_date = '';
                     if ($dataform['field_type'] == 'number' or $dataform['field_type'] == 'date') {
                         $type_date = "DOUBLE NOT NULL DEFAULT '" . $dataform['default_value'] . "'";
+                    } elseif ($dataform['field_type'] == 'matrix') {
+                        // Đối với ma trận luôn dùng TEXT để lưu trữ
+                        $type_date = 'TEXT NOT NULL';
                     } elseif ($dataform['max_length'] <= 255) {
                         $type_date = 'VARCHAR( ' . $dataform['max_length'] . " ) NOT NULL DEFAULT ''";
                     } elseif ($dataform['max_length'] <= 65536) {
@@ -459,6 +525,24 @@ if ($nv_Request->isset_request('save', 'post')) {
                         trigger_error($e->getMessage());
                     }
                 }
+                // Cập nhật cấu hình matrix nếu là trường ma trận
+                if ($dataform['field_type'] == 'matrix') {
+                    $stmt = $db->prepare("UPDATE " . NV_MOD_TABLE . "_matrix SET
+                        rows_matrix = :rows_matrix,
+                        cols_matrix = :cols_matrix,
+                        row_title = :row_title,
+                        col_title = :col_title
+                        WHERE fid = :fid");
+                        
+                    $stmt->bindParam(':fid', $dataform['fid'], PDO::PARAM_INT);
+                    $stmt->bindParam(':rows_matrix', $rows_matrix, PDO::PARAM_INT);
+                    $stmt->bindParam(':cols_matrix', $cols_matrix, PDO::PARAM_INT);
+                    $stmt->bindParam(':row_title', serialize($row_titles), PDO::PARAM_STR);
+                    $stmt->bindParam(':col_title', serialize($col_titles), PDO::PARAM_STR);
+                    $save = $stmt->execute();
+
+                }
+        
             }
         }
         if ($save) {
@@ -480,6 +564,8 @@ if ($nv_Request->isset_request('del', 'post')) {
     if ($fid and !empty($field) and empty($system)) {
         $query1 = 'DELETE FROM ' . NV_MOD_TABLE . '_field WHERE fid=' . $fid;
         $query2 = 'ALTER TABLE ' . NV_MOD_TABLE . '_info DROP ' . $field;
+        $query3 = 'DELETE FROM ' . NV_MOD_TABLE . '_matrix WHERE fid=' . $fid;
+
         if ($db->query($query1) and $db->query($query2)) {
             $query = 'SELECT fid FROM ' . NV_MOD_TABLE . '_field WHERE weight > ' . $weight . ' ORDER BY weight ASC';
             $result = $db->query($query);
@@ -502,7 +588,8 @@ $array_field_type = [
     'select' => $lang_module['field_type_select'],
     'radio' => $lang_module['field_type_radio'],
     'checkbox' => $lang_module['field_type_checkbox'],
-    'multiselect' => $lang_module['field_type_multiselect']
+    'multiselect' => $lang_module['field_type_multiselect'],
+    'matrix' => $lang_module['field_type_matrix']
 ];
 
 $array_choice_type = [
@@ -599,6 +686,15 @@ if ($nv_Request->isset_request('qlist', 'get')) {
             $dataform['fieldid'] = $dataform['field'];
             $dataform['default_value_number'] = $dataform['default_value'];
             $dataform['system'] = $dataform['is_system'];
+            // Thêm phần load cấu hình matrix nếu là trường ma trận
+            if ($dataform['field_type'] == 'matrix') {
+                $matrix_config = $db->query('SELECT * FROM ' . NV_MOD_TABLE . '_matrix WHERE fid=' . $fid)->fetch();
+                if (!empty($matrix_config)) {
+                    $matrix_config['row_title'] = unserialize($matrix_config['row_title']); 
+                    $matrix_config['col_title'] = unserialize($matrix_config['col_title']);
+                    $dataform = array_merge($dataform, $matrix_config);
+                }
+            }
         } else {
             $dataform = [];
             $dataform['show_register'] = 1;
@@ -639,6 +735,52 @@ if ($nv_Request->isset_request('qlist', 'get')) {
         $dataform['default_date'] = empty($dataform['default_value']) ? '' : date('d/m/Y', $dataform['default_value']);
         $dataform['min_date'] = empty($dataform['min_length']) ? '' : date('d/m/Y', $dataform['min_length']);
         $dataform['max_date'] = empty($dataform['max_length']) ? '' : date('d/m/Y', $dataform['max_length']);
+    } elseif ($dataform['field_type'] == 'matrix') {
+        $matrix_fields = 1;
+        
+        // Load hoặc khởi tạo cấu hình matrix
+        if ($fid > 0) {
+            // Load cấu hình ma trận từ DB
+            $matrix_config = $db->query('SELECT * FROM ' . NV_MOD_TABLE . '_matrix WHERE fid=' . $fid)->fetch();
+            if (!empty($matrix_config)) {
+                $matrix_config['row_title'] = unserialize($matrix_config['row_title']);
+                $matrix_config['col_title'] = unserialize($matrix_config['col_title']);
+            }
+        } else {
+            // Khởi tạo cấu hình mặc định
+            $matrix_config = array(
+                'rows_matrix' => 2,
+                'cols_matrix' => 2,
+                'row_title' => array('', ''),
+                'col_title' => array('', '')
+            );
+        }
+    
+        // Assign số hàng/cột cho form
+        $xtpl->assign('MATRIX', array(
+            'rows_matrix' => $matrix_config['rows_matrix'],
+            'cols_matrix' => $matrix_config['cols_matrix']
+        ));
+    
+        // Assign tiêu đề các hàng
+        if (!empty($matrix_config['row_title'])) {
+            for ($i = 0; $i < $matrix_config['rows_matrix']; $i++) {
+                $xtpl->assign('ROW_NUMBER', $i + 1);
+                $xtpl->assign('ROW_INDEX', $i);
+                $xtpl->assign('ROW_TITLE', isset($matrix_config['row_title'][$i]) ? $matrix_config['row_title'][$i] : '');
+                $xtpl->parse('main.load.row_title');
+            }
+        }
+    
+        // Assign tiêu đề các cột  
+        if (!empty($matrix_config['col_title'])) {
+            for ($i = 0; $i < $matrix_config['cols_matrix']; $i++) {
+                $xtpl->assign('COL_NUMBER', $i + 1);
+                $xtpl->assign('COL_INDEX', $i);
+                $xtpl->assign('COL_TITLE', isset($matrix_config['col_title'][$i]) ? $matrix_config['col_title'][$i] : '');
+                $xtpl->parse('main.load.col_title');
+            }
+        }
     } else {
         $choice_fields = 1;
         if (!empty($dataform['sql_choices'])) {
@@ -684,6 +826,7 @@ if ($nv_Request->isset_request('qlist', 'get')) {
     $dataform['display_choicetypes'] = ($choice_fields) ? '' : 'style="display: none;"';
     $dataform['display_choiceitems'] = ($choice_type_text) ? '' : 'style="display: none;"';
     $dataform['display_choicesql'] = ($choice_type_sql) ? '' : 'style="display: none;"';
+    $dataform['display_matrixfields'] = ($matrix_fields) ? '' : 'style="display: none;"';
 
     $dataform['editordisabled'] = ($dataform['field_type'] != 'editor') ? ' style="display: none;"' : '';
     $dataform['classdisabled'] = ($dataform['field_type'] == 'editor') ? ' style="display: none;"' : '';
