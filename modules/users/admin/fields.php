@@ -593,7 +593,6 @@ if ($nv_Request->isset_request('del_matrix', 'post')) {
                     $sth->bindParam(':row_title', serialize($row_titles), PDO::PARAM_STR);
                     
                     if($sth->execute()) {
-                        echo 'OK';
                         exit();
                     }
                 }
@@ -612,7 +611,6 @@ if ($nv_Request->isset_request('del_matrix', 'post')) {
                     $sth->bindParam(':col_title', serialize($col_titles), PDO::PARAM_STR);
                     
                     if($sth->execute()) {
-                        echo 'OK';
                         exit();
                     }
                 }
@@ -620,12 +618,49 @@ if ($nv_Request->isset_request('del_matrix', 'post')) {
         }
     } else {
         // Trường hợp chưa lưu vào CSDL
-        echo 'OK';
         exit();
     }
-    
-    echo 'ERROR';
     exit();
+}
+
+// Thêm xử lý cho AJAX request lấy template matrix
+if ($nv_Request->isset_request('get_matrix_template', 'post')) {
+    if (!defined('NV_IS_AJAX')) {
+        exit('Wrong URL');
+    }
+
+    $type = $nv_Request->get_string('type', 'post', '');
+    $count = $nv_Request->get_int('count', 'post', 0);
+    $titles = $nv_Request->get_array('titles', 'post', array());
+
+    $xtpl = new XTemplate('fields.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
+    
+    // Truyền các biến ngôn ngữ cụ thể cho ma trận
+    $xtpl->assign('MATRIX_LANG', array(
+        'row' => $lang_module['field_matrix_row'],
+        'col' => $lang_module['field_matrix_col'] 
+    ));
+
+    for($i = 0; $i < $count; $i++) {
+        $xtpl->assign('ITEM', array(
+            'index' => $i,
+            'number' => $i + 1,
+            'title' => isset($titles[$i]) ? $titles[$i] : '',
+            'type' => $type,
+            'label' => ($type == 'row') ? $lang_module['field_matrix_row'] : $lang_module['field_matrix_col']
+        ));
+
+        if($count > 1) {
+            $xtpl->parse('matrix_item.delete_btn');
+        }
+        $xtpl->parse('matrix_item');
+    }
+    
+    $contents = $xtpl->text('matrix_item');
+
+    include NV_ROOTDIR . '/includes/header.php';
+    echo $contents;
+    include NV_ROOTDIR . '/includes/footer.php';
 }
 
 $array_field_type = [

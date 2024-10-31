@@ -446,3 +446,21 @@ function nv_load_sqlchoice(choice_name_select, choice_seltected) {
     </select>
 </div>
 <!-- END: column -->
+<!-- BEGIN: matrix_item -->
+<div class="form-group matrix-{ITEM.type}">
+    <div class="input-group">
+        <span class="input-group-addon">{ITEM.label} {ITEM.number}</span>
+        <input type="text" class="form-control" name="{ITEM.type}_title_{ITEM.index}"
+            value="{ITEM.title}" maxlength="250">
+        <!-- BEGIN: delete_btn -->
+        <span class="input-group-btn" style="margin-left: 5px;">
+            <button type="button" class="btn btn-default" 
+                    onclick="nv_del_matrix_item({ITEM.index}, '{ITEM.type}');"
+                    style="margin-left: 0;">
+                <em class="fa fa-times"></em>
+            </button>
+        </span>
+        <!-- END: delete_btn -->
+    </div>
+</div>
+<!-- END: matrix_item -->

@@ -419,42 +419,22 @@ const matrixHandler = {
         this.renderGrid(rows, cols);
     },
  
+    // Trong matrixHandler
     renderTitles(type, count) {
         const titles = this.getCurrentTitles(type);
-        let html = '';
- 
-        for(let i = 0; i < count; i++) {
-            const label = type === 'row' ? 'Hàng' : 'Cột';
-            // Lấy title từ object titles hoặc tạo title mới nếu chưa có
-            const title = titles[i] !== undefined ? titles[i] : '';
-            const showDeleteBtn = count > 1;
- 
-            html += `
-                <div class="form-group matrix-${type}">
-                    <div class="input-group" style="display: flex; width: 100%;">
-                        <span class="input-group-addon" style="min-width: 80px;">${label} ${i + 1}</span>
-                        <input type="text" class="form-control" 
-                               name="${type}_title_${i}" 
-                               value="${title}" maxlength="250"
-                               style="width: 100%; flex: 1;">`;
-            
-            if (showDeleteBtn) {
-                html += `
-                        <span class="input-group-btn" style="margin-left: 5px;">
-                            <button type="button" class="btn btn-default" 
-                                    onclick="nv_del_matrix_item(${i}, '${type}');"
-                                    style="margin-left: 0;">
-                                <em class="fa fa-times"></em>
-                            </button>
-                        </span>`;
+        $.ajax({
+            type: 'POST',
+            url: script_name + '?' + nv_lang_variable + '=' + nv_lang_data + '&' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=fields&nocache=' + new Date().getTime(),
+            data: {
+                get_matrix_template: 1,
+                type: type,
+                count: count,
+                titles: titles
+            },
+            success: function(res) {
+                $(`#matrix-${type}s`).html(res);
             }
-            
-            html += `
-                    </div>
-                </div>`;
-        }
- 
-        $(`#matrix-${type}s`).html(html);
+        });
     },
 
     getCurrentTitles(type) {
