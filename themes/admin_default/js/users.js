@@ -570,53 +570,55 @@ const matrixHandler = {
         var fid = $("input[name='fid']").val();
         var inputName = (type == 'row') ? 'rows_matrix' : 'cols_matrix';
         var currentCount = parseInt($('input[name="' + inputName + '"]').val());
+        var originalCount = parseInt($('#original_' + type + 's').val() || 0);
         
         if (currentCount > 1) {
-            // Trường hợp đang chỉnh sửa ma trận đã lưu
-            if (fid > 0) {
-                var originalCount = type == 'row' ? 
-                    parseInt($('#original_rows').val() || 0) : 
-                    parseInt($('#original_cols').val() || 0);
-
-                // Nếu số lượng hiện tại > số lượng ban đầu
-                if (currentCount > originalCount) {
-                    // Cập nhật titles trước khi update view
-                    updateTitlesAfterDelete(type, index, currentCount);
-                    $('input[name="' + inputName + '"]').val(currentCount - 1);
-                    matrixHandler.updateView();
-                    return false;
-                }
-            }
-
-            // Gọi AJAX cho các trường hợp còn lại
-            $.ajax({
-                type: 'POST',
-                url: script_name + '?' + nv_lang_variable + '=' + nv_lang_data + '&' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=fields&nocache=' + new Date().getTime(),
-                data: {
-                    'del_matrix': 1,
-                    'type': type,
-                    'index': index,
-                    'fid': fid
-                },
-                success: function(res) {
-                    if (res == 'OK') {
-                        // Cập nhật titles trước khi update view
-                        updateTitlesAfterDelete(type, index, currentCount);
-                        $('input[name="' + inputName + '"]').val(currentCount - 1);
-                        matrixHandler.updateView();
-                    } else {
+            // Trường hợp xóa hàng/cột gốc đã lưu trong CSDL
+            if (fid > 0 && index < originalCount) {
+                $.ajax({
+                    type: 'POST',
+                    url: script_name + '?' + nv_lang_variable + '=' + nv_lang_data + '&' + nv_name_variable + '=' + nv_module_name + '&' + nv_fc_variable + '=fields&nocache=' + new Date().getTime(),
+                    data: {
+                        'del_matrix': 1,
+                        'type': type,
+                        'index': index,
+                        'fid': fid
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status === 'OK') {
+                            updateTitlesAfterDelete(type, index, currentCount);
+                            $('input[name="' + inputName + '"]').val(currentCount - 1);
+                            matrixHandler.updateView();
+                        } else {
+                            alert(nv_is_del_confirm[2]);
+                        }
+                    },
+                    error: function() {
                         alert(nv_is_del_confirm[2]);
                     }
-                }
-            });
+                });
+            } else {
+                // Trường hợp xóa hàng/cột tạm thời hoặc tạo mới
+                $('input[name="' + inputName + '"]').val(currentCount - 1);
+                updateTitlesAfterDelete(type, index, currentCount);
+                matrixHandler.updateView();
+            }
         }
     }
     return false;
 }
 
-// Thêm hàm mới để xử lý việc cập nhật titles khi xóa
 function updateTitlesAfterDelete(type, deleteIndex, currentCount) {
     // Di chuyển các title từ vị trí bị xóa
+    var isStoredItem = deleteIndex < parseInt($('#original_' + type + 's').val() || 0);
+    
+    if (isStoredItem) {
+        // Nếu xóa item đã lưu, cập nhật lại hidden input lưu trữ số lượng gốc
+        var originalCount = parseInt($('#original_' + type + 's').val() || 0);
+        $('#original_' + type + 's').val(originalCount - 1);
+    }
+    
     for(let i = deleteIndex; i < currentCount - 1; i++) {
         let nextInput = $(`input[name="${type}_title_${i + 1}"]`);
         let currentInput = $(`input[name="${type}_title_${i}"]`);

@@ -575,6 +575,8 @@ if ($nv_Request->isset_request('del_matrix', 'post')) {
     $index = $nv_Request->get_int('index', 'post', 0);
     $fid = $nv_Request->get_int('fid', 'post', 0);
 
+    $response = array('status' => 'ERROR');
+
     if ($fid > 0) {
         $matrix_config = $db->query('SELECT * FROM ' . NV_MOD_TABLE . '_matrix WHERE fid=' . $fid)->fetch();
         
@@ -593,7 +595,7 @@ if ($nv_Request->isset_request('del_matrix', 'post')) {
                     $sth->bindParam(':row_title', serialize($row_titles), PDO::PARAM_STR);
                     
                     if($sth->execute()) {
-                        exit();
+                        $response['status'] = 'OK';
                     }
                 }
             } 
@@ -611,15 +613,17 @@ if ($nv_Request->isset_request('del_matrix', 'post')) {
                     $sth->bindParam(':col_title', serialize($col_titles), PDO::PARAM_STR);
                     
                     if($sth->execute()) {
-                        exit();
+                        $response['status'] = 'OK';
                     }
                 }
             }
         }
     } else {
         // Trường hợp chưa lưu vào CSDL
-        exit();
+        $response['status'] = 'OK';
     }
+    
+    nv_jsonOutput($response);
     exit();
 }
 
