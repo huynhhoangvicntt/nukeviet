@@ -197,25 +197,3 @@
     pointer-events: none;
     cursor: default;
 }
-
-.matrix-labels .form-group {
-    margin-bottom: 10px;
-}
-
-.matrix-labels .input-group-addon {
-    min-width: 120px;
-}
-
-.matrix-row, .matrix-col {
-    position: relative;
-}
-
-.matrix-row .btn-remove,
-.matrix-col .btn-remove {
-    position: absolute;
-    right: -40px;
-    top: 0;
-}
-.matrix-remove-btn {
-    cursor: pointer;
-}

@@ -279,6 +279,8 @@
                                     <label>{LANG.field_matrix_rows}:</label>
                                     <input type="number" class="form-control required" name="rows_matrix" 
                                         value="{MATRIX.rows_matrix}" min="1" max="20">
+                                    <!-- Thêm input ẩn lưu số lượng hàng ban đầu -->
+                                    <input type="hidden" id="original_rows" value="{MATRIX.rows_matrix}">
                                 </div>
                             </div>
                             <div class="col-sm-12 col-md-6">
@@ -286,6 +288,8 @@
                                     <label>{LANG.field_matrix_cols}:</label>
                                     <input type="number" class="form-control required" name="cols_matrix"
                                         value="{MATRIX.cols_matrix}" min="1" max="20">
+                                    <!-- Thêm input ẩn lưu số lượng cột ban đầu -->  
+                                    <input type="hidden" id="original_cols" value="{MATRIX.cols_matrix}">
                                 </div>
                             </div>
                         </div>
@@ -296,34 +300,36 @@
                     <td>
                         <div id="matrix-rows" class="matrix-labels">
                             <!-- BEGIN: row_title -->
-                            <div class="form-group matrix-row" data-index="{ROW_INDEX}">
+                            <div class="form-group matrix-row">
                                 <div class="input-group">
                                     <span class="input-group-addon">{LANG.field_matrix_row} {ROW_NUMBER}</span>
                                     <input type="text" class="form-control" name="row_title_{ROW_INDEX}"
                                         value="{ROW_TITLE}" maxlength="250">
+                                    <!-- Hiển thị nút xóa nếu số hàng > 1 -->
+                                    {MATRIX.rows_matrix_count}
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default matrix-remove-btn" data-type="row">
+                                        <button type="button" class="btn btn-default" onclick="nv_del_matrix_item('{ROW_INDEX}', 'row');">
                                             <em class="fa fa-times"></em>
                                         </button>
-                                    </span>
+                                    </span>                            
                                 </div>
                             </div>
                             <!-- END: row_title -->
                         </div>
                     </td>
-                </tr>
+                </tr>                
                 <tr>
                     <td>{LANG.field_matrix_col_title}</td>
                     <td>
                         <div id="matrix-cols" class="matrix-labels">
                             <!-- BEGIN: col_title -->
-                            <div class="form-group matrix-col" data-index="{COL_INDEX}">
+                            <div class="form-group matrix-col">
                                 <div class="input-group">
                                     <span class="input-group-addon">{LANG.field_matrix_col} {COL_NUMBER}</span>
                                     <input type="text" class="form-control" name="col_title_{COL_INDEX}"
                                         value="{COL_TITLE}" maxlength="250">
                                     <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default matrix-remove-btn" data-type="col">
+                                        <button type="button" class="btn btn-default" onclick="nv_del_matrix_item('{COL_INDEX}', 'col');">
                                             <em class="fa fa-times"></em>
                                         </button>
                                     </span>

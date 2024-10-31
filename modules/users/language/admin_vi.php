@@ -541,7 +541,6 @@ $lang_module['userwait_resend_end'] = 'Kết thúc lúc';
 $lang_module['userwait_resend_delete'] = 'Email đã tồn tại (đã được kích hoạt theo cách nào đó), xóa thông tin chờ kích hoạt';
 $lang_module['userwait_resend_ok'] = 'Đã gửi lại email kích hoạt';
 $lang_module['userwait_resend_error'] = 'Không thể gửi email, vui lòng kiểm tra lại cấu hình gửi mail';
-
 $lang_module['field_type_matrix'] = 'Ma trận'; 
 $lang_module['field_matrix_size'] = 'Kích thước ma trận';
 $lang_module['field_matrix_rows'] = 'Số hàng';

@@ -315,13 +315,9 @@ if ($nv_Request->isset_request('save', 'post')) {
     } elseif ($dataform['field_type'] == 'matrix') {
         $matrix_fields = 1;  
         
-        // Xử lý ma trận
+    // Lấy thông số cơ bản
     $rows_matrix = $nv_Request->get_int('rows_matrix', 'post', 0); 
     $cols_matrix = $nv_Request->get_int('cols_matrix', 'post', 0);
-    
-    if ($rows_matrix < 1 || $rows_matrix > 20 || $cols_matrix < 1 || $cols_matrix > 20) {
-        $error = $lang_module['error_matrix_size'];
-    }
     
     // Lấy tiêu đề hàng và cột
     $row_titles = array();
@@ -334,17 +330,7 @@ if ($nv_Request->isset_request('save', 'post')) {
     for ($i = 0; $i < $cols_matrix; $i++) { 
         $col_titles[] = $nv_Request->get_title('col_title_' . $i, 'post', '');
     }
-
-    // Tạo ma trận mặc định
-    $default_matrix = array();
-    for ($i = 0; $i < $rows_matrix; $i++) {
-        $row = array();
-        for ($j = 0; $j < $cols_matrix; $j++) {
-            $row[] = ''; // Giá trị mặc định cho mỗi ô là rỗng
-        }
-        $default_matrix[] = $row;
-    }
-    
+ 
     // Thiết lập các thông số cho trường
     $dataform['match_type'] = 'none';
     $dataform['match_regex'] = $dataform['func_callback'] = '';
@@ -579,6 +565,69 @@ if ($nv_Request->isset_request('del', 'post')) {
     exit('NO');
 }
 
+// Xử lý xóa ma trận
+if ($nv_Request->isset_request('del_matrix', 'post')) {
+    if (!defined('NV_IS_AJAX')) {
+        exit('Wrong URL');
+    }
+
+    $type = $nv_Request->get_string('type', 'post', '');
+    $index = $nv_Request->get_int('index', 'post', 0);
+    $fid = $nv_Request->get_int('fid', 'post', 0);
+
+    if ($fid > 0) {
+        $matrix_config = $db->query('SELECT * FROM ' . NV_MOD_TABLE . '_matrix WHERE fid=' . $fid)->fetch();
+        
+        if (!empty($matrix_config)) {
+            if ($type == 'row' && $matrix_config['rows_matrix'] > 1) {
+                $row_titles = !empty($matrix_config['row_title']) ? unserialize($matrix_config['row_title']) : array();
+                if(isset($row_titles[$index])) {
+                    unset($row_titles[$index]);
+                    $row_titles = array_values($row_titles);
+                    
+                    $sql = "UPDATE " . NV_MOD_TABLE . "_matrix SET 
+                            rows_matrix = rows_matrix - 1,
+                            row_title = :row_title
+                            WHERE fid = " . $fid;
+                    $sth = $db->prepare($sql);
+                    $sth->bindParam(':row_title', serialize($row_titles), PDO::PARAM_STR);
+                    
+                    if($sth->execute()) {
+                        echo 'OK';
+                        exit();
+                    }
+                }
+            } 
+            elseif ($type == 'col' && $matrix_config['cols_matrix'] > 1) {
+                $col_titles = !empty($matrix_config['col_title']) ? unserialize($matrix_config['col_title']) : array();
+                if(isset($col_titles[$index])) {
+                    unset($col_titles[$index]);
+                    $col_titles = array_values($col_titles);
+                    
+                    $sql = "UPDATE " . NV_MOD_TABLE . "_matrix SET 
+                            cols_matrix = cols_matrix - 1,
+                            col_title = :col_title
+                            WHERE fid = " . $fid;
+                    $sth = $db->prepare($sql);
+                    $sth->bindParam(':col_title', serialize($col_titles), PDO::PARAM_STR);
+                    
+                    if($sth->execute()) {
+                        echo 'OK';
+                        exit();
+                    }
+                }
+            }
+        }
+    } else {
+        // Trường hợp chưa lưu vào CSDL
+        echo 'OK';
+        exit();
+    }
+    
+    echo 'ERROR';
+    exit();
+}
+
 $array_field_type = [
     'number' => $lang_module['field_type_number'],
     'date' => $lang_module['field_type_date'],
@@ -737,49 +786,41 @@ if ($nv_Request->isset_request('qlist', 'get')) {
         $dataform['max_date'] = empty($dataform['max_length']) ? '' : date('d/m/Y', $dataform['max_length']);
     } elseif ($dataform['field_type'] == 'matrix') {
         $matrix_fields = 1;
-        
-        // Load hoặc khởi tạo cấu hình matrix
+    
         if ($fid > 0) {
-            // Load cấu hình ma trận từ DB
             $matrix_config = $db->query('SELECT * FROM ' . NV_MOD_TABLE . '_matrix WHERE fid=' . $fid)->fetch();
             if (!empty($matrix_config)) {
                 $matrix_config['row_title'] = unserialize($matrix_config['row_title']);
                 $matrix_config['col_title'] = unserialize($matrix_config['col_title']);
+                $dataform = array_merge($dataform, $matrix_config);
             }
         } else {
-            // Khởi tạo cấu hình mặc định
+            // Khởi tạo mặc định
             $matrix_config = array(
-                'rows_matrix' => 2,
-                'cols_matrix' => 2,
+                'rows_matrix' => 1,
+                'cols_matrix' => 1,
                 'row_title' => array('', ''),
-                'col_title' => array('', '')
+                'col_title' => array('', '') 
             );
         }
-    
-        // Assign số hàng/cột cho form
+
         $xtpl->assign('MATRIX', array(
             'rows_matrix' => $matrix_config['rows_matrix'],
             'cols_matrix' => $matrix_config['cols_matrix']
         ));
-    
-        // Assign tiêu đề các hàng
-        if (!empty($matrix_config['row_title'])) {
-            for ($i = 0; $i < $matrix_config['rows_matrix']; $i++) {
-                $xtpl->assign('ROW_NUMBER', $i + 1);
-                $xtpl->assign('ROW_INDEX', $i);
-                $xtpl->assign('ROW_TITLE', isset($matrix_config['row_title'][$i]) ? $matrix_config['row_title'][$i] : '');
-                $xtpl->parse('main.load.row_title');
-            }
+
+        for ($i = 0; $i < $matrix_config['rows_matrix']; $i++) {
+            $xtpl->assign('ROW_NUMBER', $i + 1);
+            $xtpl->assign('ROW_INDEX', $i);
+            $xtpl->assign('ROW_TITLE', isset($matrix_config['row_title'][$i]) ? $matrix_config['row_title'][$i] : '');
+            $xtpl->parse('main.load.row_title');
         }
-    
-        // Assign tiêu đề các cột  
-        if (!empty($matrix_config['col_title'])) {
-            for ($i = 0; $i < $matrix_config['cols_matrix']; $i++) {
-                $xtpl->assign('COL_NUMBER', $i + 1);
-                $xtpl->assign('COL_INDEX', $i);
-                $xtpl->assign('COL_TITLE', isset($matrix_config['col_title'][$i]) ? $matrix_config['col_title'][$i] : '');
-                $xtpl->parse('main.load.col_title');
-            }
+
+        for ($i = 0; $i < $matrix_config['cols_matrix']; $i++) {
+            $xtpl->assign('COL_NUMBER', $i + 1);
+            $xtpl->assign('COL_INDEX', $i);  
+            $xtpl->assign('COL_TITLE', isset($matrix_config['col_title'][$i]) ? $matrix_config['col_title'][$i] : '');
+            $xtpl->parse('main.load.col_title');
         }
     } else {
         $choice_fields = 1;
