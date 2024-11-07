@@ -351,12 +351,6 @@
     </div>
 </form>
 <script type="text/javascript">
-var LANG_MATRIX = {
-    row: '{LANG.field_matrix_row}',
-    col: '{LANG.field_matrix_col}',
-    default_row: '{LANG.field_matrix_default_row}',  
-    default_col: '{LANG.field_matrix_default_col}'   
-};    
 var items = '{FIELD_CHOICES_NUMBER}';
 
 $(document).ready(function() {

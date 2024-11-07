@@ -93,23 +93,3 @@ function nv_get_matrix_config($fid) {
     
     return $matrix_config;
 }
-
-/**
- * nv_validate_matrix_field() 
- * Kiểm tra dữ liệu trường ma trận
- */
-function nv_validate_matrix_field($matrix_data)
-{
-    global $lang_module;
-    
-    $error = '';
-    
-    // Kiểm tra độ dài tối đa
-    foreach ($matrix_data as $cell) {
-        if (nv_strlen($cell) > 255) {
-            return $lang_module['matrix_error_length'];
-        }
-    }
-    
-    return $error;
-}

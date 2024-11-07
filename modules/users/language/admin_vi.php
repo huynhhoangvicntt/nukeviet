@@ -549,5 +549,3 @@ $lang_module['field_matrix_row'] = 'Hàng';
 $lang_module['field_matrix_col'] = 'Cột';
 $lang_module['field_matrix_row_title'] = 'Tiêu đề các hàng';
 $lang_module['field_matrix_col_title'] = 'Tiêu đề các cột';
-$lang_module['field_matrix_default_row'] = 'Hàng %d';
-$lang_module['field_matrix_default_col'] = 'Cột %d';

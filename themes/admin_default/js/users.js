@@ -438,7 +438,6 @@ const matrixHandler = {
 
     getCurrentTitles(type) {
         const titles = {};
-        // Lấy tất cả các input theo thứ tự hiện tại
         $(`input[name^="${type}_title_"]`).each(function() {
             const index = parseInt(this.name.replace(`${type}_title_`, ''));
             const value = $(this).val();
@@ -542,7 +541,6 @@ function nv_del_matrix_item(index, type) {
         var originalCount = parseInt($('#original_' + type + 's').val() || 0);
         
         if (currentCount > 1) {
-            // Trường hợp xóa hàng/cột gốc đã lưu trong CSDL
             if (fid > 0 && index < originalCount) {
                 $.ajax({
                     type: 'POST',
@@ -567,7 +565,6 @@ function nv_del_matrix_item(index, type) {
                     }
                 });
             } else {
-                // Trường hợp xóa hàng/cột tạm thời hoặc tạo mới
                 $('input[name="' + inputName + '"]').val(currentCount - 1);
                 updateTitlesAfterDelete(type, index, currentCount);
                 matrixHandler.updateView();
@@ -578,11 +575,9 @@ function nv_del_matrix_item(index, type) {
 }
 
 function updateTitlesAfterDelete(type, deleteIndex, currentCount) {
-    // Di chuyển các title từ vị trí bị xóa
     var isStoredItem = deleteIndex < parseInt($('#original_' + type + 's').val() || 0);
     
     if (isStoredItem) {
-        // Nếu xóa item đã lưu, cập nhật lại hidden input lưu trữ số lượng gốc
         var originalCount = parseInt($('#original_' + type + 's').val() || 0);
         $('#original_' + type + 's').val(originalCount - 1);
     }
