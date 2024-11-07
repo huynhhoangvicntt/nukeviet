@@ -553,6 +553,7 @@ if ($nv_Request->isset_request('del', 'post')) {
         $query3 = 'DELETE FROM ' . NV_MOD_TABLE . '_matrix WHERE fid=' . $fid;
 
         if ($db->query($query1) and $db->query($query2)) {
+            $db->query($query3);
             $query = 'SELECT fid FROM ' . NV_MOD_TABLE . '_field WHERE weight > ' . $weight . ' ORDER BY weight ASC';
             $result = $db->query($query);
             while ($row = $result->fetch()) {
@@ -575,56 +576,50 @@ if ($nv_Request->isset_request('del_matrix', 'post')) {
     $index = $nv_Request->get_int('index', 'post', 0);
     $fid = $nv_Request->get_int('fid', 'post', 0);
 
-    $response = array('status' => 'ERROR');
-
     if ($fid > 0) {
-        $matrix_config = $db->query('SELECT * FROM ' . NV_MOD_TABLE . '_matrix WHERE fid=' . $fid)->fetch();
+        list($rows_matrix, $cols_matrix, $row_title, $col_title) = $db->query('SELECT rows_matrix, cols_matrix, row_title, col_title FROM ' . NV_MOD_TABLE . '_matrix WHERE fid=' . $fid)->fetch(3);
         
-        if (!empty($matrix_config)) {
-            if ($type == 'row' && $matrix_config['rows_matrix'] > 1) {
-                $row_titles = !empty($matrix_config['row_title']) ? unserialize($matrix_config['row_title']) : array();
-                if(isset($row_titles[$index])) {
+        if (!empty($rows_matrix) || !empty($cols_matrix)) {
+            if ($type == 'row' && $rows_matrix > 1) {
+                $row_titles = !empty($row_title) ? unserialize($row_title) : array();
+                if (isset($row_titles[$index])) {
                     unset($row_titles[$index]);
                     $row_titles = array_values($row_titles);
                     
-                    $sql = "UPDATE " . NV_MOD_TABLE . "_matrix SET 
+                    $query = 'UPDATE ' . NV_MOD_TABLE . '_matrix SET 
                             rows_matrix = rows_matrix - 1,
                             row_title = :row_title
-                            WHERE fid = " . $fid;
-                    $sth = $db->prepare($sql);
+                            WHERE fid=' . $fid;
+                    $sth = $db->prepare($query);
                     $sth->bindParam(':row_title', serialize($row_titles), PDO::PARAM_STR);
                     
-                    if($sth->execute()) {
-                        $response['status'] = 'OK';
+                    if ($sth->execute()) {
+                        exit('OK');
                     }
                 }
-            } 
-            elseif ($type == 'col' && $matrix_config['cols_matrix'] > 1) {
-                $col_titles = !empty($matrix_config['col_title']) ? unserialize($matrix_config['col_title']) : array();
-                if(isset($col_titles[$index])) {
+            } elseif ($type == 'col' && $cols_matrix > 1) {
+                $col_titles = !empty($col_title) ? unserialize($col_title) : array();
+                if (isset($col_titles[$index])) {
                     unset($col_titles[$index]);
                     $col_titles = array_values($col_titles);
                     
-                    $sql = "UPDATE " . NV_MOD_TABLE . "_matrix SET 
+                    $query = 'UPDATE ' . NV_MOD_TABLE . '_matrix SET 
                             cols_matrix = cols_matrix - 1,
                             col_title = :col_title
-                            WHERE fid = " . $fid;
-                    $sth = $db->prepare($sql);
+                            WHERE fid=' . $fid;
+                    $sth = $db->prepare($query);
                     $sth->bindParam(':col_title', serialize($col_titles), PDO::PARAM_STR);
                     
-                    if($sth->execute()) {
-                        $response['status'] = 'OK';
+                    if ($sth->execute()) {
+                        exit('OK');
                     }
                 }
             }
         }
     } else {
-        // Trường hợp chưa lưu vào CSDL
-        $response['status'] = 'OK';
+        exit('OK');
     }
-    
-    nv_jsonOutput($response);
-    exit();
+    exit('NO');
 }
 
 // Thêm xử lý cho AJAX request lấy template matrix

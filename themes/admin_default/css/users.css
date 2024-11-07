@@ -197,3 +197,22 @@
     pointer-events: none;
     cursor: default;
 }
+
+.matrix-table td {
+    max-width: 250px;
+}
+.matrix-table td:first-child {
+    width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.matrix-table th {
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.matrix-table input[type="text"] {
+    width: 100%;
+}

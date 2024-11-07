@@ -69,3 +69,47 @@ function nv_get_users_field_config()
 
     return $array_field_config;
 }
+
+/**
+ * nv_get_matrix_config()
+ * Lấy thông tin cấu hình ma trận
+ */
+function nv_get_matrix_config($fid) {
+    global $db;
+    
+    $matrix_config = array();
+    
+    $sql = 'SELECT * FROM ' . NV_USERS_GLOBALTABLE . '_matrix WHERE fid = ' . intval($fid);
+    $result = $db->query($sql);
+    if ($row = $result->fetch()) {
+        $matrix_config = array(
+            'fid' => $row['fid'],
+            'rows_matrix' => $row['rows_matrix'], 
+            'cols_matrix' => $row['cols_matrix'],
+            'row_title' => !empty($row['row_title']) ? unserialize($row['row_title']) : array(),
+            'col_title' => !empty($row['col_title']) ? unserialize($row['col_title']) : array() 
+        );
+    }
+    
+    return $matrix_config;
+}
+
+/**
+ * nv_validate_matrix_field() 
+ * Kiểm tra dữ liệu trường ma trận
+ */
+function nv_validate_matrix_field($matrix_data)
+{
+    global $lang_module;
+    
+    $error = '';
+    
+    // Kiểm tra độ dài tối đa
+    foreach ($matrix_data as $cell) {
+        if (nv_strlen($cell) > 255) {
+            return $lang_module['matrix_error_length'];
+        }
+    }
+    
+    return $error;
+}

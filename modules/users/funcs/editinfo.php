@@ -1029,6 +1029,15 @@ if ($checkss == $array_data['checkss'] and $array_data['type'] == 'basic') {
         'question' => 1,
         'answer' => 1
     ]);
+
+    // Xử lý dữ liệu ma trận trước khi serialize
+    foreach ($array_field_config as $field) {
+        if ($field['field_type'] == 'matrix' && isset($custom_fields[$field['field']])) {
+            $matrix_data = $custom_fields[$field['field']];
+            $custom_fields[$field['field']] = serialize($matrix_data);
+        }
+    }
+    
     require NV_ROOTDIR . '/modules/users/fields.check.php';
 
     if ($array_data['editcensor'] and !defined('ACCESS_EDITUS') and !defined('NV_IS_MODADMIN')) {

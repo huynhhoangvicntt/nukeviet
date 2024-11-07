@@ -317,3 +317,50 @@ fieldset[disabled] .openid-single-sign-on:focus {
     border-color: #4cae4c;
     cursor: inherit;
 }
+
+.table-matrix td, .table-matrix th {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.matrix-label {
+    margin-bottom: 10px;
+}
+
+.table-matrix td, .table-matrix th {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table-matrix .matrix-cell input {
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table-matrix-responsive {
+    overflow-x: auto;
+    min-height: 0.01%;
+}
+
+.table-matrix .matrix-title strong {
+    max-width: 150px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table-matrix .matrix-cell {
+    width: 200px;
+}
+
+.table-matrix .matrix-header {
+    text-align: center;
+    font-weight: bold;
+}

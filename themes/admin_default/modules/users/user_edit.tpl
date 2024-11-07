@@ -214,6 +214,37 @@
                             <!-- END: loop -->
                         </select>
                         <!-- END: multiselect -->
+                        <!-- BEGIN: matrix -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered matrix-table">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <!-- BEGIN: col_title -->
+                                        <th class="text-center" title="{COL_TITLE}">{COL_TITLE}</th>
+                                        <!-- END: col_title -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- BEGIN: row -->
+                                    <tr>
+                                        <td class="text-right" title="{ROW_TITLE}"><strong>{ROW_TITLE}</strong></td>
+                                        <!-- BEGIN: col -->
+                                        <td>
+                                            <input type="text" 
+                                                class="form-control {FIELD.required}" 
+                                                name="custom_fields[{FIELD.field}][{ROW_INDEX}][{COL_INDEX}]" 
+                                                value="{CELL_VALUE}"
+                                                maxlength="255"
+                                            />
+                                        </td>
+                                        <!-- END: col -->
+                                    </tr>
+                                    <!-- END: row -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- END: matrix -->
                     </td>
                 </tr>
                 <!-- END: loop -->

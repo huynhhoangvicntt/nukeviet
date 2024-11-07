@@ -208,6 +208,14 @@ if ($nv_Request->isset_request('confirm', 'post')) {
         ]);
     }
 
+    // Xử lý dữ liệu ma trận trước khi serialize
+    foreach ($array_field_config as $field) {
+        if ($field['field_type'] == 'matrix' && isset($custom_fields[$field['field']])) {
+            $matrix_data = $custom_fields[$field['field']];
+            $custom_fields[$field['field']] = serialize($matrix_data);
+        }
+    }
+    
     // Kiểm tra các trường dữ liệu tùy biến + Hệ thống
     $query_field = [];
     if (!empty($array_field_config)) {
@@ -572,6 +580,49 @@ if (defined('NV_IS_USER_FORUM')) {
                     $xtpl->parse('main.edit_user.field.loop.multiselect.loop');
                 }
                 $xtpl->parse('main.edit_user.field.loop.multiselect');
+            } elseif ($row['field_type'] == 'matrix') {
+                // Lấy cấu hình ma trận
+                $matrix_config = nv_get_matrix_config($row['fid']);
+                if (!empty($matrix_config)) {
+                    // Khởi tạo ma trận rỗng làm giá trị mặc định 
+                    $default_matrix = array();
+                    for ($i = 0; $i < $matrix_config['rows_matrix']; $i++) {
+                        $default_matrix[$i] = array();
+                        for ($j = 0; $j < $matrix_config['cols_matrix']; $j++) {
+                            $default_matrix[$i][$j] = '';
+                        }
+                    }
+                    
+                    // Lấy giá trị đã lưu hoặc mặc định
+                    $matrix_values = !empty($row['value']) ? unserialize($row['value']) : $default_matrix;
+                    
+                    // Parse tiêu đề cột
+                    if (!empty($matrix_config['col_title'])) {
+                        foreach ($matrix_config['col_title'] as $col) {
+                            $xtpl->assign('COL_TITLE', $col);
+                            $xtpl->parse('main.edit_user.field.loop.matrix.col_title');
+                        }
+                    }
+                    
+                    // Parse từng dòng và ô ma trận  
+                    if (!empty($matrix_config['row_title'])) {
+                        for ($i = 0; $i < $matrix_config['rows_matrix']; $i++) {
+                            $xtpl->assign('ROW_TITLE', isset($matrix_config['row_title'][$i]) ? $matrix_config['row_title'][$i] : '');
+                            $xtpl->assign('ROW_INDEX', $i);
+                            
+                            for ($j = 0; $j < $matrix_config['cols_matrix']; $j++) {
+                                $xtpl->assign('COL_INDEX', $j);
+                                $xtpl->assign('CELL_VALUE', isset($matrix_values[$i][$j]) ? $matrix_values[$i][$j] : '');
+                                
+                                $xtpl->parse('main.edit_user.field.loop.matrix.row.col');
+                            }
+                            
+                            $xtpl->parse('main.edit_user.field.loop.matrix.row');
+                        }
+                    }
+                    
+                    $xtpl->parse('main.edit_user.field.loop.matrix');
+                }
             }
             $xtpl->parse('main.edit_user.field.loop');
             $have_custom_fields = true;

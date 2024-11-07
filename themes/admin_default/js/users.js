@@ -565,7 +565,7 @@ const matrixHandler = {
     },
  };
 
- function nv_del_matrix_item(index, type) {
+function nv_del_matrix_item(index, type) {
     if (confirm(nv_is_del_confirm[0])) {
         var fid = $("input[name='fid']").val();
         var inputName = (type == 'row') ? 'rows_matrix' : 'cols_matrix';
@@ -584,9 +584,8 @@ const matrixHandler = {
                         'index': index,
                         'fid': fid
                     },
-                    dataType: 'json',
                     success: function(response) {
-                        if (response.status === 'OK') {
+                        if (response == 'OK') {
                             updateTitlesAfterDelete(type, index, currentCount);
                             $('input[name="' + inputName + '"]').val(currentCount - 1);
                             matrixHandler.updateView();

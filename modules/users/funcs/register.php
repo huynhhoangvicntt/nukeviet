@@ -276,6 +276,15 @@ if ($checkss == $array_register['checkss']) {
         'userid' => 0
     ];
     $userid = 0;
+
+    // Xử lý dữ liệu ma trận trước khi serialize
+    foreach ($array_field_config as $field) {
+        if ($field['field_type'] == 'matrix' && isset($custom_fields[$field['field']])) {
+            $matrix_data = $custom_fields[$field['field']];
+            $custom_fields[$field['field']] = serialize($matrix_data);
+        }
+    }
+    
     require NV_ROOTDIR . '/modules/users/fields.check.php';
 
     $password = $crypt->hash_password($array_register['password'], $global_config['hashprefix']);

@@ -210,6 +210,46 @@
             </div>
         </div>
         <!-- END: multiselect -->
+         
+        <!-- BEGIN: matrix -->
+        <div class="form-group">
+            <label for="nvcf-{FIELD.field}">{FIELD.title}:</label>
+            <div>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <!-- BEGIN: col_title -->
+                                <th class="text-center">{COL_TITLE}</th>
+                                <!-- END: col_title -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- BEGIN: row -->
+                            <tr>
+                                <td class="text-right"><strong>{ROW_TITLE}</strong></td>
+                                <!-- BEGIN: col -->
+                                <td>
+                                    <input type="text" 
+                                        class="form-control {FIELD.required} {FIELD.class}" 
+                                        name="custom_fields[{FIELD.field}][{ROW_INDEX}][{COL_INDEX}]"
+                                        value="{CELL_VALUE}"
+                                        maxlength="255"
+                                        id="nvcf-{FIELD.field}-{ROW_INDEX}-{COL_INDEX}"
+                                        onkeypress="validErrorHidden(this);"
+                                        data-mess=""
+                                    />
+                                </td>
+                                <!-- END: col -->
+                            </tr>
+                            <!-- END: row -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END: matrix -->
         <!-- END: loop -->
         <!-- END: field -->
 

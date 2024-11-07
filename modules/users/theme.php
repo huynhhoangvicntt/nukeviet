@@ -207,6 +207,49 @@ function user_register($gfx_chk, $checkss, $data_questions, $array_field_config,
                         $xtpl->parse('main.field.loop.multiselect.loop');
                     }
                     $xtpl->parse('main.field.loop.multiselect');
+                } elseif ($row['field_type'] == 'matrix') {
+                    // Lấy cấu hình ma trận  
+                    $matrix_config = nv_get_matrix_config($row['fid']);
+                    if (!empty($matrix_config)) {
+                        // Khởi tạo ma trận rỗng làm giá trị mặc định 
+                        $default_matrix = array();
+                        for ($i = 0; $i < $matrix_config['rows_matrix']; $i++) {
+                            $default_matrix[$i] = array();
+                            for ($j = 0; $j < $matrix_config['cols_matrix']; $j++) {
+                                $default_matrix[$i][$j] = '';  // Giá trị mặc định là chuỗi rỗng
+                            }
+                        }
+                        
+                        // Lấy giá trị từ post hoặc dùng mặc định
+                        $matrix_values = isset($custom_fields[$row['field']]) ? $custom_fields[$row['field']] : $default_matrix;
+                        
+                        // Parse tiêu đề cột
+                        if (!empty($matrix_config['col_title'])) {
+                            foreach ($matrix_config['col_title'] as $col) {
+                                $xtpl->assign('COL_TITLE', $col);
+                                $xtpl->parse('main.field.loop.matrix.col_title'); 
+                            }
+                        }
+                        
+                        // Parse từng dòng và ô ma trận
+                        if (!empty($matrix_config['row_title'])) {
+                            for ($i = 0; $i < $matrix_config['rows_matrix']; $i++) {
+                                $xtpl->assign('ROW_TITLE', isset($matrix_config['row_title'][$i]) ? $matrix_config['row_title'][$i] : '');
+                                $xtpl->assign('ROW_INDEX', $i);
+                                
+                                for ($j = 0; $j < $matrix_config['cols_matrix']; $j++) {
+                                    $xtpl->assign('COL_INDEX', $j);
+                                    $xtpl->assign('CELL_VALUE', isset($matrix_values[$i][$j]) ? $matrix_values[$i][$j] : '');
+                                    
+                                    $xtpl->parse('main.field.loop.matrix.row.col');
+                                }
+                                
+                                $xtpl->parse('main.field.loop.matrix.row');
+                            }
+                        }
+                        
+                        $xtpl->parse('main.field.loop.matrix');
+                    }
                 }
                 $xtpl->parse('main.field.loop');
                 $have_custom_fields = true;
@@ -966,6 +1009,38 @@ function user_info($data, $array_field_config, $custom_fields, $types, $data_que
                         $xtpl->parse('main.tab_edit_others.loop.multiselect.loop');
                     }
                     $xtpl->parse('main.tab_edit_others.loop.multiselect');
+                } elseif ($row['field_type'] == 'matrix') {
+                    // Lấy cấu hình ma trận
+                    $matrix_config = nv_get_matrix_config($row['fid']); 
+                    if (!empty($matrix_config)) {
+                        $matrix_values = !empty($row['value']) ? unserialize($row['value']) : array();
+                        
+                        // Parse tiêu đề cột
+                        if (!empty($matrix_config['col_title'])) {
+                            foreach ($matrix_config['col_title'] as $col) {
+                                $xtpl->assign('COL_TITLE', $col);
+                                $xtpl->parse('main.tab_edit_others.loop.matrix.col_title');
+                            }
+                        }
+                        
+                        // Parse từng dòng và ô ma trận
+                        if (!empty($matrix_config['row_title'])) {
+                            for ($i = 0; $i < $matrix_config['rows_matrix']; $i++) {
+                                $xtpl->assign('ROW_TITLE', isset($matrix_config['row_title'][$i]) ? $matrix_config['row_title'][$i] : '');
+                                $xtpl->assign('ROW_INDEX', $i);
+                                
+                                for ($j = 0; $j < $matrix_config['cols_matrix']; $j++) {
+                                    $xtpl->assign('COL_INDEX', $j);
+                                    $xtpl->assign('CELL_VALUE', isset($matrix_values[$i][$j]) ? $matrix_values[$i][$j] : '');
+                                    
+                                    $xtpl->parse('main.tab_edit_others.loop.matrix.row.col'); 
+                                }
+                                $xtpl->parse('main.tab_edit_others.loop.matrix.row');
+                            }
+                        }
+                        
+                        $xtpl->parse('main.tab_edit_others.loop.matrix');
+                    }
                 }
                 $xtpl->parse('main.tab_edit_others.loop');
             }
@@ -1183,7 +1258,50 @@ function user_welcome($array_field_config, $custom_fields)
                     } else {
                         $value = $custom_fields[$row['field']];
                     }
-                } else {
+                } elseif ($question_type == 'matrix') {
+                    // Lấy cấu hình ma trận
+                    $matrix_config = nv_get_matrix_config($row['fid']); 
+                    $matrix_values = !empty($custom_fields[$row['field']]) ? unserialize($custom_fields[$row['field']]) : array();
+                    
+                    if (!empty($matrix_config)) {
+                        $matrix_html = '<div class="table-responsive">';
+                        $matrix_html .= '<table class="table table-bordered">';
+                        $matrix_html .= '<thead><tr><th></th>';
+                        
+                        // Parse tiêu đề cột
+                        if (!empty($matrix_config['col_title'])) {
+                            foreach ($matrix_config['col_title'] as $col) {
+                                $matrix_html .= '<th class="text-center">' . htmlspecialchars($col) . '</th>';
+                            }
+                        }
+                        
+                        $matrix_html .= '</tr></thead><tbody>';
+                        
+                        // Parse từng dòng và ô ma trận
+                        if (!empty($matrix_config['row_title'])) {
+                            for ($i = 0; $i < $matrix_config['rows_matrix']; $i++) {
+                                $matrix_html .= '<tr>';
+                                $matrix_html .= '<td class="text-right bg-light">';
+                                $matrix_html .= '<strong>' . htmlspecialchars($matrix_config['row_title'][$i]) . '</strong>';
+                                $matrix_html .= '</td>';
+                                
+                                for ($j = 0; $j < $matrix_config['cols_matrix']; $j++) {
+                                    $matrix_html .= '<td class="text-center">';
+                                    $matrix_html .= isset($matrix_values[$i][$j]) ? htmlspecialchars($matrix_values[$i][$j]) : '';
+                                    $matrix_html .= '</td>';
+                                }
+                                $matrix_html .= '</tr>';
+                            }
+                        }
+                        
+                        $matrix_html .= '</tbody></table></div>';
+                        $value = $matrix_html;
+                    } else {
+                        $value = '';
+                    }
+                }
+                
+                else {
                     $value = $custom_fields[$row['field']];
                 }
                 $xtpl->assign('FIELD', [
@@ -1428,6 +1546,47 @@ function nv_memberslist_detail_theme($item, $array_field_config, $custom_fields)
                         $value = $row['field_choices'][$custom_fields[$row['field']]];
                     } else {
                         $value = $custom_fields[$row['field']];
+                    }
+                } elseif ($question_type == 'matrix') {
+                    // Lấy cấu hình ma trận
+                    $matrix_config = nv_get_matrix_config($row['fid']); 
+                    $matrix_values = !empty($custom_fields[$row['field']]) ? unserialize($custom_fields[$row['field']]) : array();
+                    
+                    if (!empty($matrix_config)) {
+                        $matrix_html = '<div class="table-responsive">';
+                        $matrix_html .= '<table class="table table-bordered">';
+                        $matrix_html .= '<thead><tr><th></th>';
+                        
+                        // Parse tiêu đề cột
+                        if (!empty($matrix_config['col_title'])) {
+                            foreach ($matrix_config['col_title'] as $col) {
+                                $matrix_html .= '<th class="text-center">' . htmlspecialchars($col) . '</th>';
+                            }
+                        }
+                        
+                        $matrix_html .= '</tr></thead><tbody>';
+                        
+                        // Parse từng dòng và ô ma trận
+                        if (!empty($matrix_config['row_title'])) {
+                            for ($i = 0; $i < $matrix_config['rows_matrix']; $i++) {
+                                $matrix_html .= '<tr>';
+                                $matrix_html .= '<td class="text-right bg-light">';
+                                $matrix_html .= '<strong>' . htmlspecialchars($matrix_config['row_title'][$i]) . '</strong>';
+                                $matrix_html .= '</td>';
+                                
+                                for ($j = 0; $j < $matrix_config['cols_matrix']; $j++) {
+                                    $matrix_html .= '<td class="text-center">';
+                                    $matrix_html .= isset($matrix_values[$i][$j]) ? htmlspecialchars($matrix_values[$i][$j]) : '';
+                                    $matrix_html .= '</td>';
+                                }
+                                $matrix_html .= '</tr>';
+                            }
+                        }
+                        
+                        $matrix_html .= '</tbody></table></div>';
+                        $value = $matrix_html;
+                    } else {
+                        $value = '';
                     }
                 } else {
                     $value = $custom_fields[$row['field']];
