@@ -622,7 +622,6 @@ if ($nv_Request->isset_request('del_matrix', 'post')) {
     exit('NO');
 }
 
-// Thêm xử lý cho AJAX request lấy template matrix
 if ($nv_Request->isset_request('get_matrix_template', 'post')) {
     if (!defined('NV_IS_AJAX')) {
         exit('Wrong URL');
@@ -634,7 +633,6 @@ if ($nv_Request->isset_request('get_matrix_template', 'post')) {
 
     $xtpl = new XTemplate('fields.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
     
-    // Truyền các biến ngôn ngữ cụ thể cho ma trận
     $xtpl->assign('MATRIX_LANG', array(
         'row' => $lang_module['field_matrix_row'],
         'col' => $lang_module['field_matrix_col'] 
@@ -657,6 +655,58 @@ if ($nv_Request->isset_request('get_matrix_template', 'post')) {
     
     $contents = $xtpl->text('matrix_item');
 
+    include NV_ROOTDIR . '/includes/header.php';
+    echo $contents;
+    include NV_ROOTDIR . '/includes/footer.php';
+}
+
+if ($nv_Request->isset_request('get_matrix_grid', 'post')) {
+    if (!defined('NV_IS_AJAX')) {
+        exit('Wrong URL');
+    }
+
+    $rows = $nv_Request->get_int('rows', 'post', 1);
+    $cols = $nv_Request->get_int('cols', 'post', 1); 
+    $data = $nv_Request->get_string('data', 'post', '');
+    
+    $xtpl = new XTemplate('fields.tpl', NV_ROOTDIR . '/themes/' . $global_config['module_theme'] . '/modules/' . $module_file);
+    
+    $xtpl->assign('MATRIX_LANG', array(
+        'row' => $lang_module['field_matrix_row'],
+        'col' => $lang_module['field_matrix_col'],
+        'default_row' => $lang_module['field_matrix_default_row'], 
+        'default_col' => $lang_module['field_matrix_default_col']
+    ));
+
+    $matrix_data = array();
+    if(!empty($data)) {
+        $matrix_data = json_decode($data, true);
+    }
+    
+    for($i = 0; $i < $cols; $i++) {
+        $col_title = !empty($matrix_data['col_titles'][$i]) ? $matrix_data['col_titles'][$i] : sprintf($lang_module['field_matrix_default_col'], $i + 1);
+        $xtpl->assign('COL_TITLE', $col_title);
+        $xtpl->parse('matrix_grid.header');
+    }
+    
+    for($i = 0; $i < $rows; $i++) {
+        $row_title = !empty($matrix_data['row_titles'][$i]) ? $matrix_data['row_titles'][$i] : sprintf($lang_module['field_matrix_default_row'], $i + 1);
+        $xtpl->assign('ROW_TITLE', $row_title);
+        
+        for($j = 0; $j < $cols; $j++) {
+            $xtpl->assign('CELL', array(
+                'row' => $i,
+                'col' => $j,
+                'value' => isset($matrix_data['data'][$i][$j]) ? $matrix_data['data'][$i][$j] : ''
+            ));
+            $xtpl->parse('matrix_grid.row.cell');
+        }
+        $xtpl->parse('matrix_grid.row');
+    }
+    
+    $xtpl->parse('matrix_grid');
+    $contents = $xtpl->text('matrix_grid');
+    
     include NV_ROOTDIR . '/includes/header.php';
     echo $contents;
     include NV_ROOTDIR . '/includes/footer.php';

@@ -419,7 +419,6 @@ const matrixHandler = {
         this.renderGrid(rows, cols);
     },
  
-    // Trong matrixHandler
     renderTitles(type, count) {
         const titles = this.getCurrentTitles(type);
         $.ajax({
@@ -483,51 +482,21 @@ const matrixHandler = {
     },
 
     renderGrid(rows, cols) {
-        let html = `
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th></th>
-                        ${this.renderGridHeader(cols)}
-                    </tr>
-                </thead>
-                <tbody>
-                    ${this.renderGridBody(rows, cols)}
-                </tbody>
-            </table>
-        `;
-        $('#matrix-data').html(html);
-    },
- 
-    renderGridHeader(cols) {
-        let html = '';
-        for(let i = 0; i < cols; i++) {
-            const title = $(`input[name="col_title_${i}"]`).val() || `Cột ${i + 1}`;
-            html += `<th>${title}</th>`;
-        }
-        return html;
-    },
- 
-    renderGridBody(rows, cols) {
-        let html = '';
-        for(let i = 0; i < rows; i++) {
-            const rowTitle = $(`input[name="row_title_${i}"]`).val() || `Hàng ${i + 1}`;
-            html += '<tr>';
-            html += `<td>${rowTitle}</td>`;
-            
-            for(let j = 0; j < cols; j++) {
-                const value = this.getCellValue(i, j);
-                html += `
-                    <td>
-                        <input type="text" class="form-control" 
-                               name="matrix_${i}_${j}" 
-                               value="${value}">
-                    </td>
-                `;
+        $.ajax({
+            type: 'POST',
+            url: script_name + '?' + nv_lang_variable + '=' + nv_lang_data + 
+                 '&' + nv_name_variable + '=' + nv_module_name + 
+                 '&' + nv_fc_variable + '=fields&nocache=' + new Date().getTime(),
+            data: {
+                get_matrix_grid: 1,
+                rows: rows,
+                cols: cols,
+                data: this.getData() 
+            },
+            success: function(res) {
+                $('#matrix-data').html(res);
             }
-            html += '</tr>';
-        }
-        return html;
+        });
     },
  
     getCellValue(row, col) {

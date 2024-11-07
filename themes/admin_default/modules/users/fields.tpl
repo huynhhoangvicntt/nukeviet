@@ -351,6 +351,12 @@
     </div>
 </form>
 <script type="text/javascript">
+var LANG_MATRIX = {
+    row: '{LANG.field_matrix_row}',
+    col: '{LANG.field_matrix_col}',
+    default_row: '{LANG.field_matrix_default_row}',  
+    default_col: '{LANG.field_matrix_default_col}'   
+};    
 var items = '{FIELD_CHOICES_NUMBER}';
 
 $(document).ready(function() {
@@ -464,3 +470,29 @@ function nv_load_sqlchoice(choice_name_select, choice_seltected) {
     </div>
 </div>
 <!-- END: matrix_item -->
+<!-- BEGIN: matrix_grid -->
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th></th>
+            <!-- BEGIN: header -->
+            <th>{COL_TITLE}</th>
+            <!-- END: header -->
+        </tr>
+    </thead>
+    <tbody>
+        <!-- BEGIN: row -->
+        <tr>
+            <td>{ROW_TITLE}</td>
+            <!-- BEGIN: cell -->
+            <td>
+                <input type="text" class="form-control"
+                       name="matrix_{CELL.row}_{CELL.col}" 
+                       value="{CELL.value}">
+            </td>
+            <!-- END: cell -->
+        </tr>
+        <!-- END: row -->
+    </tbody>
+</table>
+<!-- END: matrix_grid -->
