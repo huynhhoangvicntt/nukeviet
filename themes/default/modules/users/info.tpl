@@ -547,37 +547,37 @@
                     </div>
                     <!-- END: multiselect -->
                     <!-- BEGIN: matrix -->
-<label class="control-label col-md-6 text-normal matrix-label">{FIELD.title}</label>
-<div class="table-matrix-responsive">
-    <table class="table table-bordered table-matrix">
-        <thead>
-            <tr>
-                <th></th>
-                <!-- BEGIN: col_title -->
-                <th class="matrix-header" title="{COL_TITLE}">{COL_TITLE}</th>
-                <!-- END: col_title -->
-            </tr>
-        </thead>
-        <tbody>
-            <!-- BEGIN: row -->
-            <tr>
-                <td class="matrix-title text-right" title="{ROW_TITLE}"><strong>{ROW_TITLE}</strong></td>
-                <!-- BEGIN: col -->
-                <td class="matrix-cell">
-                    <input type="text" 
-                        class="form-control {FIELD.required}" 
-                        name="custom_fields[{FIELD.field}][{ROW_INDEX}][{COL_INDEX}]" 
-                        value="{CELL_VALUE}"
-                        maxlength="255"
-                    />
-                </td>
-                <!-- END: col -->
-            </tr>
-            <!-- END: row -->
-        </tbody>
-    </table>
-</div>
-<!-- END: matrix -->
+                    <label class="control-label col-md-6 text-normal matrix-label">{FIELD.title}</label>
+                    <div class="table-matrix-responsive">
+                        <table class="table table-bordered table-matrix">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <!-- BEGIN: col_title -->
+                                    <th class="matrix-header" title="{COL_TITLE}">{COL_TITLE}</th>
+                                    <!-- END: col_title -->
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- BEGIN: row -->
+                                <tr>
+                                    <td class="matrix-title text-right" title="{ROW_TITLE}"><strong>{ROW_TITLE}</strong></td>
+                                    <!-- BEGIN: col -->
+                                    <td class="matrix-cell">
+                                        <input type="text" 
+                                            class="form-control {FIELD.required}" 
+                                            name="custom_fields[{FIELD.field}][{ROW_INDEX}][{COL_INDEX}]" 
+                                            value="{CELL_VALUE}"
+                                            maxlength="255"
+                                        />
+                                    </td>
+                                    <!-- END: col -->
+                                </tr>
+                                <!-- END: row -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- END: matrix -->
                     <!-- END: loop -->
                     <div class="form-group">
                         <div class="col-md-6">

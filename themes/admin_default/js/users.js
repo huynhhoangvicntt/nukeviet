@@ -955,7 +955,6 @@ $(document).ready(function() {
         }
     });
 
-    // Khởi tạo matrix handler nếu đang ở trang có ma trận
     if($("#matrixfields").length) {
         matrixHandler.init();
     }

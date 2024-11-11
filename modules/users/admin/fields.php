@@ -315,11 +315,9 @@ if ($nv_Request->isset_request('save', 'post')) {
     } elseif ($dataform['field_type'] == 'matrix') {
         $matrix_fields = 1;  
         
-    // Lấy thông số cơ bản
     $rows_matrix = $nv_Request->get_int('rows_matrix', 'post', 0); 
     $cols_matrix = $nv_Request->get_int('cols_matrix', 'post', 0);
     
-    // Lấy tiêu đề hàng và cột
     $row_titles = array();
     $col_titles = array();
     
@@ -331,13 +329,12 @@ if ($nv_Request->isset_request('save', 'post')) {
         $col_titles[] = $nv_Request->get_title('col_title_' . $i, 'post', '');
     }
  
-    // Thiết lập các thông số cho trường
     $dataform['match_type'] = 'none';
     $dataform['match_regex'] = $dataform['func_callback'] = '';
     $dataform['min_length'] = 0;
     $dataform['max_length'] = 65536; // TEXT 
     $dataform['field_choices'] = '';
-    $dataform['default_value'] = serialize($default_matrix); // Lưu ma trận mặc định đã serialize
+    $dataform['default_value'] = serialize($default_matrix);
     } else {
         $dataform['choicetypes'] = $nv_Request->get_string('choicetypes', 'post', '');
         $dataform['match_type'] = 'none';
@@ -433,26 +430,21 @@ if ($nv_Request->isset_request('save', 'post')) {
                         $type_date = 'LONGTEXT NOT NULL';
                     }
                     $save = $db->exec('ALTER TABLE ' . NV_MOD_TABLE . '_info ADD ' . $dataform['field'] . ' ' . $type_date . ' COMMENT ' . $db->quote($dataform['title']));
-                     // Lưu cấu hình matrix nếu là trường ma trận
-if ($save && $dataform['field_type'] == 'matrix') {
-    // Khởi tạo giá trị mặc định cho trường matrix trong users_info
-    $db->query('UPDATE ' . NV_MOD_TABLE . '_info SET ' . $dataform['field'] . " = ''");
-    
-    // Lưu cấu hình ma trận
-    $stmt = $db->prepare("INSERT INTO " . NV_MOD_TABLE . "_matrix
-        (fid, rows_matrix, cols_matrix, row_title, col_title)
-        VALUES (:fid, :rows_matrix, :cols_matrix, :row_title, :col_title)");
 
-    $stmt->bindParam(':fid', $dataform['fid'], PDO::PARAM_INT);
-    $stmt->bindParam(':rows_matrix', $rows_matrix, PDO::PARAM_INT); 
-    $stmt->bindParam(':cols_matrix', $cols_matrix, PDO::PARAM_INT);
-    $stmt->bindParam(':row_title', serialize($row_titles), PDO::PARAM_STR);
-    $stmt->bindParam(':col_title', serialize($col_titles), PDO::PARAM_STR);
+                    if ($save && $dataform['field_type'] == 'matrix') {
+                        $db->query('UPDATE ' . NV_MOD_TABLE . '_info SET ' . $dataform['field'] . " = ''");
     
-    if ($stmt->execute()) {
-        nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=' . $op . '&fid=' . $dataform['fid'] . '&rand=' . nv_genpass());
-    }
-}
+                        $stmt = $db->prepare("INSERT INTO " . NV_MOD_TABLE . "_matrix (fid, rows_matrix, cols_matrix, row_title, col_title) VALUES (:fid, :rows_matrix, :cols_matrix, :row_title, :col_title)");
+                        $stmt->bindParam(':fid', $dataform['fid'], PDO::PARAM_INT);
+                        $stmt->bindParam(':rows_matrix', $rows_matrix, PDO::PARAM_INT); 
+                        $stmt->bindParam(':cols_matrix', $cols_matrix, PDO::PARAM_INT);
+                        $stmt->bindParam(':row_title', serialize($row_titles), PDO::PARAM_STR);
+                        $stmt->bindParam(':col_title', serialize($col_titles), PDO::PARAM_STR);
+    
+                        if ($stmt->execute()) {
+                            nv_redirect_location(NV_BASE_ADMINURL . 'index.php?' . NV_LANG_VARIABLE . '=' . NV_LANG_DATA . '&' . NV_NAME_VARIABLE . '=' . $module_name . '&' . NV_OP_VARIABLE . '=' . $op . '&fid=' . $dataform['fid'] . '&rand=' . nv_genpass());
+                        }
+                    }
                 }
             }
         } elseif ($dataform['max_length'] <= 4294967296) {
@@ -511,7 +503,6 @@ if ($save && $dataform['field_type'] == 'matrix') {
                         trigger_error($e->getMessage());
                     }
                 }
-                // Cập nhật cấu hình matrix nếu là trường ma trận
                 if ($dataform['field_type'] == 'matrix') {
                     $stmt = $db->prepare("UPDATE " . NV_MOD_TABLE . "_matrix SET
                         rows_matrix = :rows_matrix,
@@ -819,7 +810,6 @@ if ($nv_Request->isset_request('qlist', 'get')) {
             $dataform['fieldid'] = $dataform['field'];
             $dataform['default_value_number'] = $dataform['default_value'];
             $dataform['system'] = $dataform['is_system'];
-            // Thêm phần load cấu hình matrix nếu là trường ma trận
             if ($dataform['field_type'] == 'matrix') {
                 $matrix_config = $db->query('SELECT * FROM ' . NV_MOD_TABLE . '_matrix WHERE fid=' . $fid)->fetch();
                 if (!empty($matrix_config)) {
@@ -879,7 +869,6 @@ if ($nv_Request->isset_request('qlist', 'get')) {
                 $dataform = array_merge($dataform, $matrix_config);
             }
         } else {
-            // Khởi tạo mặc định
             $matrix_config = array(
                 'rows_matrix' => 1,
                 'cols_matrix' => 1,
