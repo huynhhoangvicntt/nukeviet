@@ -270,12 +270,13 @@ $sql_create_table[] = 'CREATE TABLE ' . $db_config['prefix'] . '_plugin (
 ) ENGINE=MyISAM';
 
 $sql_create_table[] = 'CREATE TABLE ' . $db_config['prefix'] . "_counter (
-   c_type varchar(100) NOT NULL,
-   c_val varchar(100) NOT NULL,
-   last_update int(11) NOT NULL DEFAULT '0',
-   c_count int(11) unsigned NOT NULL DEFAULT '0',
-   " . NV_LANG_DATA . "_count int(11) unsigned NOT NULL DEFAULT '0',
-   UNIQUE KEY c_type (c_type,c_val)
+  c_type varchar(100) NOT NULL,
+  c_val varchar(100) NOT NULL,
+  last_update int(11) NOT NULL DEFAULT '0',
+  c_count int(11) unsigned NOT NULL DEFAULT '0',
+  " . NV_LANG_DATA . "_count int(11) unsigned NOT NULL DEFAULT '0',
+  stat_date int(11) NOT NULL DEFAULT '0',
+  UNIQUE KEY c_type_val_date (c_type,c_val,stat_date)
 ) ENGINE=MyISAM";
 
 $sql_create_table[] = 'CREATE TABLE ' . $db_config['prefix'] . "_notification (

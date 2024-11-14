@@ -3,7 +3,14 @@
 
 <!-- BEGIN: hour -->
 <div class="panel panel-default">
-    <div class="panel-heading"><i class="fa fa-fw fa-line-chart"></i>{CTS.caption}</div>
+    <div class="panel-heading">
+        <i class="fa fa-fw fa-line-chart"></i>{CTS.caption}
+        <div class="pull-right">
+            <input type="date" class="form-control input-sm" style="width: 200px; display: inline-block" 
+                id="stat_date" value="{SELECTED_DATE}" 
+                max="{NV_CURRENTDATE}">
+        </div>
+    </div>
     <div class="panel-body">
         <canvas id="canvas_hour"></canvas>
     </div>
@@ -65,9 +72,35 @@
             }
         }
     };
-    $(function() {
-        new Chart(document.getElementById("canvas_hour").getContext("2d"), config_hour);
+
+    var hourChart = new Chart(document.getElementById("canvas_hour").getContext("2d"), config_hour);
+
+    $('#stat_date').on('change', function() {
+        $.ajax({
+            url: nv_base_siteurl + 'index.php?' + nv_lang_variable + '=' + nv_lang_data + '&' + nv_name_variable + '=statistics',
+            method: 'POST',
+            data: {
+                nv_ajax: 1,
+                date: this.value,
+                op: 'hour_stats'
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.status == 'success') {
+                    config_hour.data.labels = response.labels;
+                    config_hour.data.datasets[0].data = response.data;
+                    hourChart.update();
+                    
+                    $('#hour_stats .panel-heading i + span').text(response.caption);
+                    $('#hour_stats .panel-footer strong').text(response.total);
+                }
+            }
+        });
     });
+
+    if ($('#stat_date').val() == '{NV_CURRENTDATE}') {
+        $('#stat_date').trigger('change');
+    }
 </script>
 <!-- END: hour -->
 

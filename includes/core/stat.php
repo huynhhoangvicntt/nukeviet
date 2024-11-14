@@ -54,10 +54,52 @@ function nv_stat_update()
             $db->query('INSERT INTO ' . NV_COUNTER_GLOBALTABLE . " (c_type, c_val) VALUES ('year', '" . $current_year . "')");
         }
 
+        $result = $db->query('SELECT c_type, c_val, c_count, ' . NV_LANG_DATA . '_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE (c_type='month' OR c_type='day' OR c_type='hour')");
+        while ($row = $result->fetch()) {
+            $sql = 'INSERT INTO ' . NV_COUNTER_GLOBALTABLE . ' (c_type, c_val, c_count, ' . NV_LANG_DATA . '_count, last_update, stat_date) VALUES (' . 
+                   "'" . $row['c_type'] . "'," .
+                   "'" . $row['c_val'] . "'," .
+                   $row['c_count'] . ',' .
+                   $row[NV_LANG_DATA . '_count'] . ',' .
+                   NV_CURRENTTIME . ',' .
+                   strtotime($last_year . '-12-31') .
+                   ')';
+            $db->query($sql);
+        }
+
         $db->query('UPDATE ' . NV_COUNTER_GLOBALTABLE . ' SET c_count= 0, ' . NV_LANG_DATA . "_count= 0 WHERE (c_type='month' OR c_type='day' OR c_type='hour')");
+
     } elseif ($last_month != $current_month) {
+        $result = $db->query('SELECT c_type, c_val, c_count, ' . NV_LANG_DATA . '_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE (c_type='day' OR c_type='hour')");
+        while ($row = $result->fetch()) {
+            $last_day_of_month = date('Y-m-t', strtotime($current_year . '-' . $last_month . '-01'));
+            $sql = 'INSERT INTO ' . NV_COUNTER_GLOBALTABLE . ' (c_type, c_val, c_count, ' . NV_LANG_DATA . '_count, last_update, stat_date) VALUES (' . 
+                   "'" . $row['c_type'] . "'," .
+                   "'" . $row['c_val'] . "'," .
+                   $row['c_count'] . ',' .
+                   $row[NV_LANG_DATA . '_count'] . ',' .
+                   NV_CURRENTTIME . ',' .
+                   strtotime($last_day_of_month) .
+                   ')';
+            $db->query($sql);
+        }
+
         $db->query('UPDATE ' . NV_COUNTER_GLOBALTABLE . ' SET c_count= 0, ' . NV_LANG_DATA . "_count= 0 WHERE (c_type='day' OR c_type='hour')");
+
     } elseif ($last_day != $current_day) {
+        $result = $db->query('SELECT c_type, c_val, c_count, ' . NV_LANG_DATA . '_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE c_type='hour'");
+        while ($row = $result->fetch()) {
+            $sql = 'INSERT INTO ' . NV_COUNTER_GLOBALTABLE . ' (c_type, c_val, c_count, ' . NV_LANG_DATA . '_count, last_update, stat_date) VALUES (' . 
+                   "'" . $row['c_type'] . "'," .
+                   "'" . $row['c_val'] . "'," .
+                   $row['c_count'] . ',' .
+                   $row[NV_LANG_DATA . '_count'] . ',' .
+                   NV_CURRENTTIME . ',' .
+                   strtotime(date('Y-m-d', NV_CURRENTTIME) . ' -1 day') .
+                   ')';
+            $db->query($sql);
+        }
+
         $db->query('UPDATE ' . NV_COUNTER_GLOBALTABLE . ' SET c_count= 0, ' . NV_LANG_DATA . "_count= 0 WHERE c_type='hour'");
     }
 

@@ -67,7 +67,7 @@ $month_list2 = "'" . implode("','", array_keys($month_list2)) . "'";
 $max = 0;
 $total = 0;
 
-$sql = 'SELECT c_val,c_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE c_type='month' AND c_val IN (" . $month_list2 . ')';
+$sql = 'SELECT c_val,c_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE c_type='month' AND c_val IN (" . $month_list2 . ") AND stat_date = 0";
 $result = $db->query($sql);
 while (list($month, $count) = $result->fetch(3)) {
     $month_list[$month]['count'] = $count;
@@ -90,7 +90,7 @@ $max = 0;
 $total = 0;
 $day_list = [];
 
-$sql = 'SELECT c_val,c_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE c_type='day' AND c_val <= " . $current_number_of_days . ' ORDER BY c_val';
+$sql = 'SELECT c_val,c_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE c_type='day' AND c_val <= " . $current_number_of_days . ' AND stat_date = 0 ORDER BY c_val';
 $result = $db->query($sql);
 while (list($day, $count) = $result->fetch(3)) {
     $day_list[$day] = $count;
@@ -140,6 +140,59 @@ $ctsdw['rows'] = $dayofweek_list;
 $ctsdw['current_dayofweek'] = $current_dayofweek;
 $ctsdw['max'] = $max;
 $ctsdw['total'] = [$lang_global['total'], number_format($total, 0, ',', '.')];
+
+// Phần xử lý AJAX
+if ($nv_Request->isset_request('nv_ajax', 'post')) {
+    $date = $nv_Request->get_string('date', 'post', '');
+    $op = $nv_Request->get_string('op', 'post', '');
+    
+    if ($op == 'hour_stats') {
+        $selected_date_parts = explode('-', $date);
+        if (count($selected_date_parts) === 3) {
+            $year = $selected_date_parts[0];
+            $month = $selected_date_parts[1]; 
+            $day = $selected_date_parts[2];
+            $selected_date_start = mktime(0, 0, 0, $month, $day, $year);
+        } else {
+            $selected_date_start = NV_CURRENTTIME;
+        }
+    
+        $data = [];
+        for ($i = 0; $i < 24; $i++) {
+            $hour = sprintf('%02d', $i);
+            $data[$hour] = 0; 
+        }
+    
+        $labels = [];
+        for ($i = 0; $i < 24; $i++) {
+            $labels[] = sprintf('%02d', $i);
+        }
+    
+        $current_day_start = strtotime(date('Y-m-d', NV_CURRENTTIME));
+        if ($selected_date_start == $current_day_start) {
+            $sql = 'SELECT c_val,c_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE c_type='hour' AND stat_date = 0";
+        } else {
+            $sql = 'SELECT c_val,c_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE c_type='hour' AND stat_date = " . $selected_date_start;
+        }
+    
+        $total = 0;
+        $result = $db->query($sql);
+        while (list($hour, $count) = $result->fetch(3)) {
+            $data[$hour] = $count;
+            $total = $total + $count;
+        }
+    
+        $response = [
+            'status' => 'success',
+            'caption' => sprintf($lang_module['statbyhour'], nv_date('d/m/Y', $selected_date_start)),
+            'labels' => $labels,
+            'data' => array_values($data),
+            'total' => number_format($total, 0, ',', '.')
+        ];
+    
+        nv_jsonOutput($response);
+    }
+}
 
 // Giờ trong ngày
 $max = 0;

@@ -349,6 +349,9 @@ function nv_theme_statistics_main($ctsy, $ctsm, $ctsdm, $ctsdw, $ctsc, $ctsb, $c
     $xtpl->assign('DATA_LABEL', '"' . implode('", "', array_keys($ctsh['rows'])) . '"');
     $xtpl->assign('DATA_VALUE', implode(', ', $ctsh['rows']));
 
+    $xtpl->assign('SELECTED_DATE', date('Y-m-d', NV_CURRENTTIME));
+    $xtpl->assign('NV_CURRENTDATE', date('Y-m-d', NV_CURRENTTIME));
+
     $xtpl->parse('main.hour');
 
     // Thống kê theo ngày trong tuần
