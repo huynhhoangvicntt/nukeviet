@@ -199,7 +199,7 @@ $max = 0;
 $total = 0;
 $hour_list = [];
 
-$sql = 'SELECT c_val,c_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE c_type='hour' ORDER BY c_val";
+$sql = 'SELECT c_val,c_count FROM ' . NV_COUNTER_GLOBALTABLE . " WHERE c_type='hour' AND stat_date = 0";
 $result = $db->query($sql);
 while (list($hour, $count) = $result->fetch(3)) {
     $hour_list[$hour] = $count;
@@ -215,6 +215,8 @@ $ctsh['rows'] = $hour_list;
 $ctsh['current_hour'] = date('H', NV_CURRENTTIME);
 $ctsh['max'] = $max;
 $ctsh['total'] = [$lang_global['total'], number_format($total, 0, ',', '.')];
+$current_hour = date('H', NV_CURRENTTIME);
+$current_day_start = strtotime(date('Y-m-d', NV_CURRENTTIME));
 
 // quoc gia
 $db->sqlreset()->select('c_val,c_count, last_update')->from(NV_COUNTER_GLOBALTABLE)->where("c_type='country' AND c_count!=0")->order('c_count DESC')->limit(10);
