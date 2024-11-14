@@ -91,8 +91,8 @@
                     config_hour.data.datasets[0].data = response.data;
                     hourChart.update();
                     
-                    $('#hour_stats .panel-heading i + span').text(response.caption);
-                    $('#hour_stats .panel-footer strong').text(response.total);
+                    $('.panel-heading:first i + span').text(response.caption);
+                    $('.panel-footer:first strong').text(response.total);
                 }
             }
         });

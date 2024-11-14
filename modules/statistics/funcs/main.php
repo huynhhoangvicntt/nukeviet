@@ -210,7 +210,7 @@ while (list($hour, $count) = $result->fetch(3)) {
 }
 
 $ctsh = [];
-$ctsh['caption'] = $lang_module['statbyhour'];
+$ctsh['caption'] = sprintf($lang_module['statbyhour'], nv_date('d/m/Y', NV_CURRENTTIME));
 $ctsh['rows'] = $hour_list;
 $ctsh['current_hour'] = date('H', NV_CURRENTTIME);
 $ctsh['max'] = $max;
