@@ -124,7 +124,7 @@ function nv_stat_update()
 		(c_type='bot' AND c_val= :bot_name) OR
 		(c_type='browser' AND c_val= :browser) OR
 		(c_type='os' AND c_val= :client_os) OR
-		(c_type='country' AND c_val= :country)"
+		(c_type='country' AND c_val= :country))"
     );
     $sth->bindParam(':bot_name', $bot_name, PDO::PARAM_STR);
     $sth->bindParam(':browser', $br, PDO::PARAM_STR);
