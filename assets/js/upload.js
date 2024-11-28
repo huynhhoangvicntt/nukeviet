@@ -712,11 +712,10 @@ function extractvideo() {
             var ext = file.split('.').pop();
             return (ext == 'mp4' || ext == 'webm' || ext == 'ogv');
         });
-        
         var selFileData = $("img[title='" + videoFiles[0] + "']").attr("name").split("|");
         var path = (selFileData[7] == "") ? $("span#foldervalue").attr("title") : selFileData[7];
         var completedFiles = 0;
-        
+
         videoFiles.forEach(function(file) {
             $.ajax({
                 type: "POST",
@@ -725,7 +724,7 @@ function extractvideo() {
                 success: function(e) {
                     if (e === 'OK') {
                         completedFiles++;
-                        if(completedFiles === videoFiles.length) {
+                        if (completedFiles === videoFiles.length) {
                             $("#imglist").load(nv_module_url + "imglist&path=" + path + "&type=" + $("select[name=imgtype]").val() + "&imgfile=" + videoFiles.map(function(f) {
                                 return f.replace(/\.[^/.]+$/, ".jpg");
                             }).join("|") + "&order=" + $("select[name=order]").val() + "&random=" + nv_randomNum(10), function() {

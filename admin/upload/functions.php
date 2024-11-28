@@ -707,7 +707,7 @@ function nv_extract_video_image($filePath)
     $duration = exec($duration_cmd);
     $duration = (int)$duration;
 
-    if($duration > 0) {
+    if ($duration > 0) {
         $random_second = rand(0, $duration); 
         $time_str = sprintf("%02d:%02d:%02d",
             floor($random_second / 3600),
@@ -741,7 +741,7 @@ function nv_extract_video_image($filePath)
         }
     }
 
-    $imageThumb = nv_get_viewImage($dirPath . '/' . $fileName . '.jpg', true);
+    nv_get_viewImage($dirPath . '/' . $fileName . '.jpg', true);
 
     return 'OK';
 }
