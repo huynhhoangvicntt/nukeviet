@@ -705,34 +705,72 @@ function deletefolder() {
 // Xuat anh tu video
 function extractvideo() {
     var selFile = $("input[name=selFile]").val();
-    var selFileData = $("img[title='" + selFile + "']").attr("name").split("|");
-    var path = (selFileData[7] == "") ? $("span#foldervalue").attr("title") : selFileData[7];
+    
+    if(selFile.indexOf('|') !== -1) {
+        var files = selFile.split('|');
+        var videoFiles = files.filter(function(file) {
+            var ext = file.split('.').pop();
+            return (ext == 'mp4' || ext == 'webm' || ext == 'ogv');
+        });
+        
+        var selFileData = $("img[title='" + videoFiles[0] + "']").attr("name").split("|");
+        var path = (selFileData[7] == "") ? $("span#foldervalue").attr("title") : selFileData[7];
+        
+        videoFiles.forEach(function(file) {
+            $.ajax({
+                type: "POST",
+                url: nv_module_url + "extractimage",
+                data: "path=" + path + "&file=" + file,
+                success: function(e) {
+                    if (e === 'OK') {
+                        var imgFile = file.replace(/\.[^/.]+$/, ".jpg");
+                        var timestamp = new Date().getTime();
+                        
+                        var listImg = $("img[title='" + imgFile + "']"); 
+                        if(listImg.length) {
+                            var currentSrc = listImg.attr('src');
+                            listImg.attr('src', currentSrc + '?t=' + timestamp);
+                        }
+                        
+                        var previewImg = $("#fileView img");
+                        if(previewImg.length) {
+                            var previewSrc = previewImg.attr('src');
+                            previewImg.attr('src', previewSrc + '?t=' + timestamp);
+                        }
+                    }
+                }
+            });
+        });
+    } else {
+        var selFileData = $("img[title='" + selFile + "']").attr("name").split("|");
+        var path = (selFileData[7] == "") ? $("span#foldervalue").attr("title") : selFileData[7];
 
-    $.ajax({
-        type: "POST",
-        url: nv_module_url + "extractimage",
-        data: "path=" + path + "&file=" + selFile,
-        success: function(e) {
-            if (e === 'OK') {
-                var imgFile = selFile.replace(/\.[^/.]+$/, ".jpg");
-                var timestamp = new Date().getTime();
-                
-                var listImg = $("img[title='" + imgFile + "']"); 
-                if(listImg.length) {
-                    var currentSrc = listImg.attr('src');
-                    listImg.attr('src', currentSrc + '?t=' + timestamp);
+        $.ajax({
+            type: "POST", 
+            url: nv_module_url + "extractimage",
+            data: "path=" + path + "&file=" + selFile,
+            success: function(e) {
+                if (e === 'OK') {
+                    var imgFile = selFile.replace(/\.[^/.]+$/, ".jpg");
+                    var timestamp = new Date().getTime();
+                    
+                    var listImg = $("img[title='" + imgFile + "']"); 
+                    if(listImg.length) {
+                        var currentSrc = listImg.attr('src');
+                        listImg.attr('src', currentSrc + '?t=' + timestamp);
+                    }
+                    
+                    var previewImg = $("#fileView img");
+                    if(previewImg.length) {
+                        var previewSrc = previewImg.attr('src');
+                        previewImg.attr('src', previewSrc + '?t=' + timestamp);
+                    }
+                } else {
+                    alert(e);
                 }
-                 
-                var previewImg = $("#fileView img");
-                if(previewImg.length) {
-                    var previewSrc = previewImg.attr('src');
-                    previewImg.attr('src', previewSrc + '?t=' + timestamp);
-                }
-            } else {
-                alert(e);
             }
-        }
-    });
+        });
+    }
 }
 
 // Tim kiem file
