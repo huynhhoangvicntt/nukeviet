@@ -39,6 +39,7 @@ if (defined('NV_IS_SPADMIN')) {
     $allow_func[] = 'recreatethumb';
     $allow_func[] = 'config';
     $allow_func[] = 'uploadconfig';
+    $allow_func[] = 'extractimage';
 }
 
 /**
@@ -685,3 +686,62 @@ if ($nv_Request->isset_request('dirListRefresh', 'get')) {
 }
 
 $global_config['upload_logo'] = nv_unhtmlspecialchars($global_config['upload_logo']);
+
+/**
+ * nv_extract_video_image()
+ * 
+ * @param mixed $filePath
+ * @return
+ */
+function nv_extract_video_image($filePath)
+{
+    global $admin_info;
+
+    $outputFile = preg_replace('/\.[^.]+$/', '.jpg', $filePath);
+    
+    if (file_exists($outputFile)) {
+        @unlink($outputFile);
+    }
+
+    $duration_cmd = 'ffprobe -i "' . $filePath . '" -show_entries format=duration -v quiet -of csv="p=0"';
+    $duration = exec($duration_cmd);
+    $duration = (int)$duration;
+
+    if($duration > 0) {
+        $random_second = rand(0, $duration); 
+        $time_str = sprintf("%02d:%02d:%02d",
+            floor($random_second / 3600),
+            floor(($random_second % 3600) / 60),
+            $random_second % 60
+        );
+    } else {
+        $time_str = "00:00:05";
+    }
+
+    $ffmpeg_cmd = 'ffmpeg -ss ' . $time_str . ' -i "' . $filePath . 
+                 '" -frames:v 1 -q:v 2 -vf scale=320:-1 "' . $outputFile . '" -loglevel error';
+                 
+    exec($ffmpeg_cmd, $output, $return);
+
+    if ($return !== 0 || !file_exists($outputFile)) {
+        return 'ERROR';
+    }
+
+    $pathInfo = pathinfo($filePath);
+    $dirPath = str_replace(NV_ROOTDIR . '/', '', $pathInfo['dirname']);
+    $fileName = $pathInfo['filename'];
+
+    $thumbPath = NV_ROOTDIR . '/' . NV_FILES_DIR . '/' . $dirPath;
+    $thumbFiles = glob($thumbPath . '/' . $fileName . '*.*');
+    if (is_array($thumbFiles)) {
+        foreach ($thumbFiles as $thumb) {
+            if (preg_match('/_thumb\./', $thumb)) {
+                @unlink($thumb);
+            }
+        }
+    }
+
+    $imageThumb = nv_get_viewImage($dirPath . '/' . $fileName . '.jpg', true);
+
+    return 'OK';
+}

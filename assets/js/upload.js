@@ -550,6 +550,10 @@ function fileMouseup(file, e) {
                 }
             }
 
+            if (fileExt == 'mp4' || fileExt == 'webm' || fileExt == 'ogv') {
+                html += '<li id="extractimage"><em class="fa fa-lg fa-image">&nbsp;</em>' + LANG.extract_image + '</li>';
+            }
+
             if ($("span#move_file").attr("title") == "1") {
                 html += '<li id="move"><em class="fa fa-lg ' + ICON.move + '">&nbsp;</em>' + LANG.move + '</li>';
             }
@@ -696,6 +700,39 @@ function deletefolder() {
             }
         })
     }
+}
+
+// Xuat anh tu video
+function extractvideo() {
+    var selFile = $("input[name=selFile]").val();
+    var selFileData = $("img[title='" + selFile + "']").attr("name").split("|");
+    var path = (selFileData[7] == "") ? $("span#foldervalue").attr("title") : selFileData[7];
+
+    $.ajax({
+        type: "POST",
+        url: nv_module_url + "extractimage",
+        data: "path=" + path + "&file=" + selFile,
+        success: function(e) {
+            if (e === 'OK') {
+                var imgFile = selFile.replace(/\.[^/.]+$/, ".jpg");
+                var timestamp = new Date().getTime();
+                
+                var listImg = $("img[title='" + imgFile + "']"); 
+                if(listImg.length) {
+                    var currentSrc = listImg.attr('src');
+                    listImg.attr('src', currentSrc + '?t=' + timestamp);
+                }
+                 
+                var previewImg = $("#fileView img");
+                if(previewImg.length) {
+                    var previewSrc = previewImg.attr('src');
+                    previewImg.attr('src', previewSrc + '?t=' + timestamp);
+                }
+            } else {
+                alert(e);
+            }
+        }
+    });
 }
 
 // Tim kiem file
@@ -2430,6 +2467,9 @@ var NVCMENU = {
         },
         deletefolder: function() {
             deletefolder()
+        },
+        extractimage: function() {
+            extractvideo();
         }
     },
     init: function() {

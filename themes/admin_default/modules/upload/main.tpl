@@ -363,6 +363,7 @@ LANG.addlogo_error_small = "{LANG.addlogo_error_small}";
 LANG.altimage = "{LANG.altimage}";
 LANG.upload_alt_note = "{LANG.upload_alt_note}";
 LANG.autologo_for_upload = "{LANG.autologo_for_upload}";
+LANG.extract_image = "{LANG.extract_image}";
 
 var nv_my_domain = '{NV_MY_DOMAIN}';
 var nv_max_size_bytes = '{NV_MAX_SIZE_BYTES}';
